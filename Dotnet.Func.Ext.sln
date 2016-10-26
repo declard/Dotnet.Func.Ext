@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dotnet.Func.Ext", "Dotnet.Func.Ext\Dotnet.Func.Ext.csproj", "{B4159BC4-150B-4EC4-ABF1-726C6798C778}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dotnet.Func.Ext.Tests", "Dotnet.Func.Ext.Tests\Dotnet.Func.Ext.Tests.csproj", "{8EBE3DB4-5408-47DA-89E2-E02D294D0299}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B4159BC4-150B-4EC4-ABF1-726C6798C778}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4159BC4-150B-4EC4-ABF1-726C6798C778}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4159BC4-150B-4EC4-ABF1-726C6798C778}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4159BC4-150B-4EC4-ABF1-726C6798C778}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EBE3DB4-5408-47DA-89E2-E02D294D0299}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EBE3DB4-5408-47DA-89E2-E02D294D0299}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EBE3DB4-5408-47DA-89E2-E02D294D0299}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EBE3DB4-5408-47DA-89E2-E02D294D0299}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
