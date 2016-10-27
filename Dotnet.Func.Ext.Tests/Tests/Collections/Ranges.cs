@@ -11,7 +11,7 @@ namespace Dotnet.Func.Ext.Tests.Collections
         [Test, TestCaseSource(nameof(EnumFromByToCases))]
         public void EnumFromByTo(int from, int by, int to, int[] expected)
         {
-            var actual = Ext.Collections.Ranges.EnumFromByTo(from, by, to).Take(10).ToArray();
+            var actual = Ext.Collections.Ranges.EnumFromByTo(from, by, to, Algebras.AInt32.Class).Take(10).ToArray();
 
             Assert.AreEqual(expected, actual);
         }
@@ -153,7 +153,7 @@ namespace Dotnet.Func.Ext.Tests.Collections
         [Test, TestCaseSource(nameof(EnumFromThenToCases))]
         public void EnumFromThenTo(int from, int then, int to, int[] expected)
         {
-            var actual = Ext.Collections.Ranges.EnumFromThenTo(from, then, to).Take(10).ToArray();
+            var actual = Ext.Collections.Ranges.EnumFromThenTo(from, then, to, Algebras.AInt32.Class).Take(10).ToArray();
 
             Assert.AreEqual(expected, actual);
         }
@@ -294,7 +294,7 @@ namespace Dotnet.Func.Ext.Tests.Collections
         [Test, TestCaseSource(nameof(EnumFromByCases))]
         public void EnumFromBy(int from, int by, int[] expected)
         {
-            var actual = Ext.Collections.Ranges.EnumFromBy(from, by).Take(5).ToArray();
+            var actual = Ext.Collections.Ranges.EnumFromBy(from, by, Algebras.AInt32.Class).Take(5).ToArray();
 
             Assert.AreEqual(expected, actual);
         }
@@ -323,7 +323,7 @@ namespace Dotnet.Func.Ext.Tests.Collections
         [Test, TestCaseSource(nameof(EnumFromThenCases))]
         public void EnumFromThen(int from, int then, int[] expected)
         {
-            var actual = Ext.Collections.Ranges.EnumFromThen(from, then).Take(5).ToArray();
+            var actual = Ext.Collections.Ranges.EnumFromThen(from, then, Algebras.AInt32.Class).Take(5).ToArray();
 
             Assert.AreEqual(expected, actual);
         }
@@ -352,7 +352,7 @@ namespace Dotnet.Func.Ext.Tests.Collections
         [Test, TestCaseSource(nameof(EnumFromCases))]
         public void EnumFrom(int from, int[] expected)
         {
-            var actual = Ext.Collections.Ranges.EnumFrom(from).Take(5).ToArray();
+            var actual = Ext.Collections.Ranges.EnumFrom(from, Algebras.AInt32.Class).Take(5).ToArray();
 
             Assert.AreEqual(expected, actual);
         }
@@ -367,7 +367,7 @@ namespace Dotnet.Func.Ext.Tests.Collections
         [Test, TestCaseSource(nameof(EnumFromToCases))]
         public void EnumFromTo(int from, int to, int[] expected)
         {
-            var actual = Ext.Collections.Ranges.EnumFromTo(from, to).ToArray();
+            var actual = Ext.Collections.Ranges.EnumFromTo(from, to, Algebras.AInt32.Class).ToArray();
 
             Assert.AreEqual(expected, actual);
         }

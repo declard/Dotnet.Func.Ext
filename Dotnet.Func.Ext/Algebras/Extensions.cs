@@ -27,10 +27,11 @@ namespace Dotnet.Func.Ext.Algebras
         public static type Neg<type, mark>(this SInv<type, Additive<mark>> inv, type t) => inv.Inv(t);
         public static type Add<type, mark>(this SSemigroup<type, Additive<mark>> semi, type l, type r) => semi.Op(l, r);
         public static type Sub<type, mark>(this SGroup<type, Additive<mark>> group, type l, type r) => group.Add(l, group.Neg(r));
-        public static type Inc<type, mark>(this SRing<type, mark> ring, type t) => ring.Add<type, mark>(t, ring.One<type, mark>());
-        public static type Dec<type, mark>(this SRing<type, mark> ring, type t) => ring.Sub(t, ring.One<type, mark>());
+        public static type Inc<type, mark>(this SRing<type, mark> ring, type t) => ring.Add(t, ring.One());
+        public static type Dec<type, mark>(this SRing<type, mark> ring, type t) => ring.Sub(t, ring.One());
 
         public static type One<type, mark>(this SNeutral<type, Multiplicative<mark>> neu) => neu.Unit();
+        public static type MinusOne<type, mark>(this SRing<type, mark> that) => that.Neg(that.One());
         public static type Recip<type, mark>(this SInv<type, Multiplicative<mark>> inv, type t) => inv.Inv(t);
         public static type Mul<type, mark>(this SSemigroup<type, Multiplicative<mark>> neu, type l, type r) => neu.Op(l, r);
         public static type Div<type, mark>(this SGroup<type, Multiplicative<mark>> group, type l, type r) => group.Mul(l, group.Recip(r));
@@ -49,6 +50,18 @@ namespace Dotnet.Func.Ext.Algebras
             var inf = semi.Inf(l, r);
             return CreateOrd(that.Equal(r, inf).Not(), that.Equal(l, inf).Not());
         }
+
+
+        // Because of multiple interface inheritance compiler can't decide what type arguments are
+        // To be more specific, it can't deal with parameteric polymorphism of the second rank
+        // so specialized extensions are provided for some operations
+        public static type Zero<type>(this SNeutral<type, Additive<Unit>> neu) => neu.Unit();
+        public static type One<type>(this SNeutral<type, Multiplicative<Unit>> neu) => neu.Unit();
+        public static type Add<type>(this SSemigroup<type, Additive<Unit>> semi, type l, type r) => semi.Op(l, r);
+
+        public static type Zero<type, mark>(this SRing<type, mark> ring) => ((SNeutral<type, Additive<mark>>)ring).Zero();
+        public static type One<type, mark>(this SRing<type, mark> ring) => ((SNeutral<type, Multiplicative<mark>>)ring).One();
+        public static type Add<type, mark>(this SRing<type, mark> ring, type l, type r) => ((SSemigroup<type, Additive<mark>>)ring).Add(l, r);
 
         #endregion
 

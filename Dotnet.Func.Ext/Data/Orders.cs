@@ -111,6 +111,11 @@
             }
 
             public static Ord Compare(Ord left, Ord right) => left._ord.CompareTo(right._ord).ToOrd();
+
+            public static bool operator == (Ord left, Ord right) => Compare(left, right).IsEq();
+            public static bool operator !=(Ord left, Ord right) => (left == right).Not();
+
+            public override string ToString() => this.Case("Lt()", "Eq()", "Gt()");
         }
 
         /// <summary>
