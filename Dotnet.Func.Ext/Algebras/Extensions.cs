@@ -13,9 +13,9 @@ namespace Dotnet.Func.Ext.Algebras
     {
         public static Func<type, bool> ToPred<type>(this REquality<type, Unit> eq, type value) => e => eq.Equal(e, value);
 
-        public static bool EqualByCompare<type, mark>(ROrderByCompare<type, mark> ord, type l, type r) => ord.Compare(l, r).ToEq();
-        public static type InfByCompare<type, mark>(ROrderByCompare<type, mark> ord, type l, type r) => ord.Compare(l, r).Case(l, l, r);
-        public static type SupByCompare<type, mark>(ROrderByCompare<type, mark> ord, type l, type r) => ord.Compare(l, r).Case(r, r, l);
+        public static bool EqualByCompare<type>(Func<type, type, Ord> ord, type l, type r) => ord(l, r).IsEq();
+        public static type InfByCompare<type>(Func<type, type, Ord> ord, type l, type r) => ord(l, r).Case(l, l, r);
+        public static type SupByCompare<type>(Func<type, type, Ord> ord, type l, type r) => ord(l, r).Case(r, r, l);
 
         #region Human-readable Alg-based ops
 
@@ -110,19 +110,5 @@ namespace Dotnet.Func.Ext.Algebras
 
         public static res Case<left, right, res>(this IEither<left, right> that, Func<left, res> Left, Func<right, res> Right) =>
             that.Case(Left, App, Right, App);
-
-        public static type ToRing<type>(this int n, SRing<type, Unit> r)
-        {
-            type res = r.Zero<type, Unit>();
-
-            if (n > 0)
-                for (var i = 0; i < n; i++)
-                    res = r.Add<type, Unit>(res, r.One<type, Unit>());
-            else
-                for (var i = 0; i > n; i--)
-                    res = r.Sub(res, r.One<type, Unit>());
-
-            return res;
-        }
     }
 }

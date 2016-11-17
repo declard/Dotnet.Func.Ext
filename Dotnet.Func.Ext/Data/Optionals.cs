@@ -94,7 +94,7 @@
             public static Opt<val> CreateSome(val value) => new Opt<val> { _value = value, _isSome = true };
             
             /// <summary>
-            /// Basic closure-evading coalgebra
+            /// Basic closure-evading pattern matcher
             /// </summary>
             public res Case<leftCtx, rightCtx, res>(leftCtx leftCtxˈ, Func<leftCtx, Unit, res> Left, rightCtx rightCtxˈ, Func<rightCtx, val, res> Right) =>
                 !_isSome ? Left(leftCtxˈ, Unit()) : Right(rightCtxˈ, _value);
@@ -112,6 +112,11 @@
             /// </summary>
             public static Opt<val> Pure<val>(val v) => Some(v);
         }
+
+        /// <summary>
+        /// Point operation as an extension
+        /// </summary>
+        public static Opt<val> PureOpt<val>(this val that) => Opt.Pure(that);
         
         /// <summary>
         /// Guarantees no nulls for reference values
@@ -231,7 +236,13 @@
         /// </summary>
         public static Opt<target> Then<target>(this bool condition, Func<Unit, target> then) =>
             condition ? Some(then(Unit())) : None<target>();
-            //condition.Homo(ABool.Class, AOpt<Unit>.Class).Map(then); // too cool to use here
+        //condition.Homo(ABool.Class, AOpt<Unit>.Class).Map(then); // too cool to use here
+
+        /// <summary>
+        /// If-then expression analogue
+        /// </summary>
+        public static Opt<target> Then<target>(this bool condition, target then) =>
+            condition ? Some(then) : None<target>();
 
         /// <summary>
         /// Ensure that contained value (if any) satisfies the predicate or else return None

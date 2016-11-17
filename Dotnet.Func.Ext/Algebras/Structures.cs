@@ -1,7 +1,9 @@
 ﻿namespace Dotnet.Func.Ext.Algebras
 {
     using System;
+    using System.Collections.Generic;
     using static Data.Eithers;
+    using static Data.Optionals;
     using static Data.Orders;
     using static Data.Tuples;
     using static Data.Units;
@@ -57,10 +59,10 @@
         {
         }
 
-        public interface ROrderByCompare<type, mark> : ROrder<type, mark>
-        {
-            Ord Compare(type l, type r);
-        }
+        //public interface ROrderByCompare<type, mark> : ROrder<type, mark>
+        //{
+        //    Ord Compare(type l, type r);
+        //}
 
         public interface SNullOp<type, mark>
         {
@@ -94,8 +96,22 @@
         public interface SRing<type, mark> : SGroup<type, Additive<mark>>, SMonoid<type, Multiplicative<mark>> { }
 
         public interface SField<type, mark> : SRing<type, mark>, SGroup<type, Multiplicative<mark>> { }
-        
-        public interface SNat<type> : SSumProj<type, Unit, type>, SSumInj<type, Unit, type> { }
+
+        public interface SEnum<type>
+        {
+            Opt<type> Succ(type v);
+            Opt<type> Pred(type v);
+        }
+
+        public interface SRangeable<type>
+        {
+            IEnumerable<type> EnumFrom(type from);
+            IEnumerable<type> EnumFromThen(type from, type then);
+            IEnumerable<type> EnumFromTo(type from, type to);
+            IEnumerable<type> EnumFromThenTo(type from, type then, type to);
+        }
+
+        public interface SList<type, element> : SSumInj<type, Unit, Pair<element, type>>, SSumProj<type, Unit, Pair<element, type>> { }
 
         public interface SHashable<type>
         {

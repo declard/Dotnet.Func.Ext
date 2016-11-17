@@ -40,7 +40,7 @@
             public static Identity<val> CreateIdentity(val value) => new Identity<val> { _value = value };
 
             /// <summary>
-            /// Basic coalgebra (closure-evading)
+            /// Basic pattern matcher (closure-evading)
             /// </summary>
             public outˈ Case<valCtx, outˈ>(valCtx valCtxˈ, Func<valCtx, val, outˈ> f) => f(valCtxˈ, _value);
 
@@ -59,7 +59,12 @@
         }
 
         /// <summary>
-        /// Basic coalgebra
+        /// Point operation as an extension
+        /// </summary>
+        public static Identity<val> PureIdentity<val>(this val that) => Identity.Pure(that);
+
+        /// <summary>
+        /// Basic pattern matcher
         /// </summary>
         public static outˈ Case<val, outˈ>(this Identity<val> that, Func<val, outˈ> f) => f(that.Identity());
 

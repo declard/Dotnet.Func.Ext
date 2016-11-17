@@ -42,6 +42,8 @@
     /// </summary>
     public static class Tuples
     {
+        #region Pair
+
         /// <summary>
         /// Pair of values
         /// Is a functor by its right value
@@ -53,12 +55,18 @@
             private left _left;
             private right _right;
 
+            /// <summary>
+            /// Smart ctor
+            /// </summary>
             public static Pair<left, right> Create(left Left, right Right) => new Pair<left, right>
             {
                 _left = Left,
                 _right = Right,
             };
 
+            /// <summary>
+            /// Basic pattern matcher (close-evading)
+            /// </summary>
             public outˈ Case<ctx, outˈ>(ctx ctxˈ, Func<ctx, left, right, outˈ> f) =>
                 f(ctxˈ, _left, _right);
         }
@@ -73,7 +81,7 @@
         }
 
         /// <summary>
-        /// Basic coalgebra
+        /// Basic pattern matcher
         /// </summary>
         public static outˈ Case<left, right, outˈ>(this Pair<left, right> that, Func<left, right, outˈ> f) =>
             that.Case(f, (fˈ, l, r) => fˈ(l, r));
@@ -96,6 +104,44 @@
         public static Pair<left, right> Join<left, right>(this Pair<left, Pair<left, right>> that, Resolver.Resolvable<SSemigroup<left, Additive<Unit>>> semi = null) =>
             Pair(semi.Value().BinOp(that.Left(), that.Right().Left()), that.Right().Right());
 
+        /// <summary>
+        /// Pair mirroring (left and right get exchanged)
+        /// </summary>
+        public static Pair<right, left> Flip<left, right>(this Pair<left, right> pair) => Pair(pair.Right(), pair.Left());
+
+        #endregion
+
+        #region Tuple
+
+        /// <summary>
+        /// Tuple_2 pattern matcher
+        /// </summary>
+        public static outˈ Case<in1, in2, outˈ>(this Tuple<in1, in2> that, Func<in1, in2, outˈ> f) =>
+            f(that.Item1, that.Item2);
+
+        /// <summary>
+        /// Tuple_3 pattern matcher
+        /// </summary>
+        public static outˈ Case<in1, in2, in3, outˈ>(this Tuple<in1, in2, in3> that, Func<in1, in2, in3, outˈ> f) =>
+            f(that.Item1, that.Item2, that.Item3);
+
+        /// <summary>
+        /// Tuple_4 pattern matcher
+        /// </summary>
+        public static outˈ Case<in1, in2, in3, in4, outˈ>(this Tuple<in1, in2, in3, in4> that, Func<in1, in2, in3, in4, outˈ> f) =>
+            f(that.Item1, that.Item2, that.Item3, that.Item4);
+
+        /// <summary>
+        /// Tuple_5 pattern matcher
+        /// </summary>
+        public static outˈ Case<in1, in2, in3, in4, in5, outˈ>(this Tuple<in1, in2, in3, in4, in5> that, Func<in1, in2, in3, in4, in5, outˈ> f) =>
+            f(that.Item1, that.Item2, that.Item3, that.Item4, that.Item5);
+
+        /// <summary>
+        /// Tuple_6 pattern matcher
+        /// </summary>
+        public static outˈ Case<in1, in2, in3, in4, in5, in6, outˈ>(this Tuple<in1, in2, in3, in4, in5, in6> that, Func<in1, in2, in3, in4, in5, in6, outˈ> f) =>
+            f(that.Item1, that.Item2, that.Item3, that.Item4, that.Item5, that.Item6);
 
         /// <summary>
         /// Tuple_2 functor bimap
@@ -114,18 +160,10 @@
         /// </summary>
         public static Tuple<left, right> Join<left, right>(this Tuple<left, Tuple<left, right>> that, Resolver.Resolvable<SSemigroup<left, Additive<Unit>>> semi = null) =>
             that.ToPair().Map(ToPair).Join(semi).ToTuple();
-        
-        /// <summary>
-        /// Pair mirroring (left and right get exchanged)
-        /// </summary>
-        public static Pair<right, left> Flip<left, right>(this Pair<left, right> pair) => Pair(pair.Right(), pair.Left());
 
+        #endregion
 
-        /// <summary>
-        /// Pair to KVP iso
-        /// </summary>
-        public static KeyValuePair<left, right> ToKvp<left, right>(this Pair<left, right> that) =>
-            KeyValuePair(that.Left(), that.Right());
+        #region Isomorphisms
 
         /// <summary>
         /// KVP to Pair iso
@@ -134,16 +172,22 @@
             Pair(that.Key, that.Value);
 
         /// <summary>
-        /// Tuple_2 to Pair iso
+        /// Pair to KVP iso
         /// </summary>
-        public static Pair<left, right> ToPair<left, right>(this Tuple<left, right> that) =>
-            Pair(that.Item1, that.Item2);
-        
+        public static KeyValuePair<left, right> ToKvp<left, right>(this Pair<left, right> that) =>
+            KeyValuePair(that.Left(), that.Right());
+
         /// <summary>
         /// Pair to Tuple_2 iso
         /// </summary>
         public static Tuple<left, right> ToTuple<left, right>(this Pair<left, right> pair) =>
             Tuple.Create(pair.Left(), pair.Right());
+
+        /// <summary>
+        /// Tuple_2 to Pair iso
+        /// </summary>
+        public static Pair<left, right> ToPair<left, right>(this Tuple<left, right> that) =>
+            Pair(that.Item1, that.Item2);
 
         /// <summary>
         /// Tuple_3 to Pair of Pair iso
@@ -156,5 +200,7 @@
         /// </summary>
         public static Pair<a, Pair<b, Pair<c, d>>> ToPair<a, b, c, d>(this Tuple<a, b, c, d> that) =>
             Pair(that.Item1, Pair(that.Item2, Pair(that.Item3, that.Item4)));
+
+        #endregion
     }
 }

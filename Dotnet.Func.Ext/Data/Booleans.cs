@@ -47,12 +47,12 @@
     public static class Booleans
     {
         /// <summary>
-        /// Basic coalgebra
+        /// Basic pattern matcher
         /// </summary>
         public static outˈ Case<outˈ>(this bool boolˈ, Func<Unit, outˈ> falseˈ, Func<Unit, outˈ> trueˈ) => boolˈ.Case(falseˈ, Fst, trueˈ, Fst)(Ctors.Unit());
 
         /// <summary>
-        /// Basic closure-evading coalgebra
+        /// Basic closure-evading pattern matcher
         /// </summary>
         public static outˈ Case<falseCtx, trueCtx, outˈ>(this bool boolˈ, falseCtx falseCtxˈ, Func<falseCtx, Unit, outˈ> falseˈ, trueCtx trueCtxˈ, Func<trueCtx, Unit, outˈ> trueˈ) =>
             boolˈ ? falseˈ(falseCtxˈ, Ctors.Unit()) : trueˈ(trueCtxˈ, Ctors.Unit());
@@ -65,11 +65,12 @@
         /// <summary>
         /// if that then value else default
         /// </summary>
-        public static val Then<val>(this bool that, val value) => that.Case(default(val), Fst, value, Fst);
+        public static val ThenOrDefault<val>(this bool that, val value) => that.Case(default(val), Fst, value, Fst);
+
         /// <summary>
         /// Closure-evading `Then`
         /// </summary>
-        public static outˈ Then<inCtx, inˈ, outˈ>(this bool that, inCtx ctx, Func<inCtx, Unit, outˈ> f) => that.Case(default(outˈ), Fst, ctx, f);
+        public static outˈ ThenOrDefault<inCtx, inˈ, outˈ>(this bool that, inCtx ctx, Func<inCtx, Unit, outˈ> f) => that.Case(default(outˈ), Fst, ctx, f);
 
         /// <summary>
         /// Ternary operator analogue for functions applications

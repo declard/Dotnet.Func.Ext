@@ -65,10 +65,11 @@
     <Compile Include="Collections\DictionaryExtensions.cs" />
     <Compile Include="Collections\Enumerable.cs" />
     <Compile Include="Collections\DictionaryLikeExtensions.cs" />
-    <Compile Include="Collections\Initializers.cs" />
+    <Compile Include="Collections\ListExtensions.cs" />
     <Compile Include="Collections\Ranges.cs" />
     <Compile Include="Collections\ReadOnlyCasts\Extensions.cs" />
     <Compile Include="Data\Booleans.cs" />
+    <Compile Include="Data\Continuations.cs" />
     <Compile Include="Data\List.cs" />
     <Compile Include="Data\Eithers.cs" />
     <Compile Include="Data\Orders.cs" />

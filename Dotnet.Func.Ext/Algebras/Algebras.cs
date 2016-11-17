@@ -14,7 +14,7 @@
     using static Structures;
 
     [Resolvable]
-    public class AInt32 : SNat<int>, ROrderByCompare<int, Unit>, SRing<int, Unit>, SBounded<int, Unit>
+    public class AInt32 : ROrder<int, Unit>, SRing<int, Unit>, SBounded<int, Unit>, SEnum<int>, SUnitInj<int, Unit>
     {
         public static readonly AInt32 Class = new AInt32();
 
@@ -31,19 +31,46 @@
 
         int SBinOp<int, int, int, Additive<Unit>>.BinOp(int l, int r) => l + r;
 
-        Ord ROrderByCompare<int, Unit>.Compare(int l, int r) => l.CompareTo(r).ToOrd();
-        bool SBinOp<int, int, bool, Equative<Unit>>.BinOp(int l, int r) => EqualByCompare(this, l, r);
-        int SBinOp<int, int, int, Infimum<Unit>>.BinOp(int l, int r) => InfByCompare(this, l, r);
-        int SBinOp<int, int, int, Supremum<Unit>>.BinOp(int l, int r) => SupByCompare(this, l, r);
-        
-        public res Project<res>(int Value, Pair<Func<Unit, res>, Func<int, res>> Projector) =>
-            Value == 0 ? Projector.Left()(Unit()) : Projector.Right()(Value - 1);
-        public int Inject<arg>(arg Arg, Either<Func<arg, Unit>, Func<arg, int>> Injector) =>
-            Injector.Case(Arg, (a, f) => Seq(f(a), 0), Arg, (a, f) => f(a) + 1);
+        bool SBinOp<int, int, bool, Equative<Unit>>.BinOp(int l, int r) => EqualByCompare(Compare, l, r);
+        int SBinOp<int, int, int, Infimum<Unit>>.BinOp(int l, int r) => InfByCompare(Compare, l, r);
+        int SBinOp<int, int, int, Supremum<Unit>>.BinOp(int l, int r) => SupByCompare(Compare, l, r);
+
+        Opt<int> SEnum<int>.Succ(int v) => (v != int.MaxValue).Then(v + 1);
+        Opt<int> SEnum<int>.Pred(int v) => (v != int.MinValue).Then(v - 1);
+
+        int SUnitInj<int, Unit>.Inj(Unit _) => 0;
+
+        static Ord Compare(int l, int r) => l.CompareTo(r).ToOrd();
     }
 
     [Resolvable]
-    public class ARatio : SField<Ratio, Unit>, ROrderByCompare<Ratio, Unit>, SNat<Ratio>
+    public class AChar : ROrder<char, Unit>, SBounded<char, Unit>, SGroup<char, Additive<Unit>>, SNeutral<char, Multiplicative<Unit>>, SEnum<char>, SUnitInj<char, Unit>
+    {
+        public static readonly AChar Class = new AChar();
+
+        char SNullOp<char, Infimum<Unit>>.NullOp() => char.MinValue;
+        char SNullOp<char, Supremum<Unit>>.NullOp() => char.MaxValue;
+
+        bool SBinOp<char, char, bool, Equative<Unit>>.BinOp(char l, char r) => EqualByCompare(Compare, l, r);
+        char SBinOp<char, char, char, Infimum<Unit>>.BinOp(char l, char r) => InfByCompare(Compare, l, r);
+        char SBinOp<char, char, char, Supremum<Unit>>.BinOp(char l, char r) => SupByCompare(Compare, l, r);
+
+        char SNullOp<char, Additive<Unit>>.NullOp() => (char)0;
+        char SUnOp<char, char, Additive<Unit>>.UnOp(char t) => (char)(-t);
+        char SBinOp<char, char, char, Additive<Unit>>.BinOp(char l, char r) => (char)(l + r);
+
+        char SNullOp<char, Multiplicative<Unit>>.NullOp() => (char)1;
+
+        Opt<char> SEnum<char>.Succ(char v) => (v != char.MaxValue).Then((char)(v + 1));
+        Opt<char> SEnum<char>.Pred(char v) => (v != char.MinValue).Then((char)(v - 1));
+
+        char SUnitInj<char, Unit>.Inj(Unit _) => (char)0;
+
+        static Ord Compare(char l, char r) => l.CompareTo(r).ToOrd();
+    }
+
+    [Resolvable]
+    public class ARatio : SField<Ratio, Unit>, ROrder<Ratio, Unit>, SUnitInj<Ratio, Unit>
     {
         public static readonly ARatio Class = new ARatio();
 
@@ -55,20 +82,17 @@
         Ratio SBinOp<Ratio, Ratio, Ratio, Multiplicative<Unit>>.BinOp(Ratio l, Ratio r) => Ratio.Mul(l, r);
         Ratio SUnOp<Ratio, Ratio, Multiplicative<Unit>>.UnOp(Ratio t) => Ratio.Inv(t);
 
-        Ord ROrderByCompare<Ratio, Unit>.Compare(Ratio l, Ratio r) => AInt32.Class.Compare(l.Numerator * r.Denominator, r.Numerator * l.Denominator);
-        bool SBinOp<Ratio, Ratio, bool, Equative<Unit>>.BinOp(Ratio l, Ratio r) => EqualByCompare(this, l, r);
-        Ratio SBinOp<Ratio, Ratio, Ratio, Infimum<Unit>>.BinOp(Ratio l, Ratio r) => SupByCompare(this, l, r);
-        Ratio SBinOp<Ratio, Ratio, Ratio, Supremum<Unit>>.BinOp(Ratio l, Ratio r) => InfByCompare(this, l, r);
+        bool SBinOp<Ratio, Ratio, bool, Equative<Unit>>.BinOp(Ratio l, Ratio r) => EqualByCompare(Compare, l, r);
+        Ratio SBinOp<Ratio, Ratio, Ratio, Infimum<Unit>>.BinOp(Ratio l, Ratio r) => SupByCompare(Compare, l, r);
+        Ratio SBinOp<Ratio, Ratio, Ratio, Supremum<Unit>>.BinOp(Ratio l, Ratio r) => InfByCompare(Compare, l, r);
 
-        public res Project<res>(Ratio Value, Pair<Func<Unit, res>, Func<Ratio, res>> Projector) =>
-            this.Equal(Value.Normalize(), Ratio.Zero) ? Projector.Left()(Unit()) : Projector.Right()(Ratio.Add(Value, Ratio.Neg(Ratio.One)));
+        Ratio SUnitInj<Ratio, Unit>.Inj(Unit Value) => Ratio.Zero;
 
-        public Ratio Inject<arg>(arg Arg, Either<Func<arg, Unit>, Func<arg, Ratio>> Injector) =>
-            Injector.Case(Arg, (a, f) => Seq(f(a), Ratio.Zero), Arg, (a, f) => Ratio.Add(f(a), Ratio.One));
+        static Ord Compare(Ratio l, Ratio r) => AInt32.Class.Compare(l.Numerator * r.Denominator, r.Numerator * l.Denominator);
     }
 
     [Resolvable]
-    public class ADouble: SField<double, Unit>, ROrderByCompare<double, Unit>, SNat<double>
+    public class ADouble: SField<double, Unit>, ROrder<double, Unit>, SUnitInj<double, Unit>
     {
         public static readonly ADouble Class = new ADouble();
 
@@ -80,50 +104,77 @@
         double SBinOp<double, double, double, Multiplicative<Unit>>.BinOp(double l, double r) => l * r;
         double SUnOp<double, double, Multiplicative<Unit>>.UnOp(double t) => 1 / t;
 
-        Ord ROrderByCompare<double, Unit>.Compare(double l, double r) => l.CompareTo(r).ToOrd();
-        bool SBinOp<double, double, bool, Equative<Unit>>.BinOp(double l, double r) => EqualByCompare(this, l, r);
-        double SBinOp<double, double, double, Infimum<Unit>>.BinOp(double l, double r) => InfByCompare(this, l, r);
-        double SBinOp<double, double, double, Supremum<Unit>>.BinOp(double l, double r) => SupByCompare(this, l, r);
-        
-        public res Project<res>(double Value, Pair<Func<Unit, res>, Func<double, res>> Projector) =>
-            Value == 0 ? Projector.Left()(Unit()) : Projector.Right()(Value - 1);
+        bool SBinOp<double, double, bool, Equative<Unit>>.BinOp(double l, double r) => EqualByCompare(Compare, l, r);
+        double SBinOp<double, double, double, Infimum<Unit>>.BinOp(double l, double r) => InfByCompare(Compare, l, r);
+        double SBinOp<double, double, double, Supremum<Unit>>.BinOp(double l, double r) => SupByCompare(Compare, l, r);
 
-        public double Inject<arg>(arg Arg, Either<Func<arg, Unit>, Func<arg, double>> Injector) =>
-            Injector.Case(Arg, (a, f) => Seq(f(a), 0), Arg, (a, f) => f(a) + 1);
+        double SUnitInj<double, Unit>.Inj(Unit _) => 0;
+
+        static Ord Compare(double l, double r) => l.CompareTo(r).ToOrd();
     }
 
     [Resolvable]
-    public class ABool : ROrderByCompare<bool, Unit>, SBounded<bool, Unit>, SSumProj<bool, Unit, Unit>, SSumInj<bool, Unit, Unit>
+    public class ABool : ROrder<bool, Unit>, SBounded<bool, Unit>, SSumProj<bool, Unit, Unit>, SSumInj<bool, Unit, Unit>, SEnum<bool>
     {
         public static readonly ABool Class = new ABool();
 
         bool SNullOp<bool, Infimum<Unit>>.NullOp() => false;
         bool SNullOp<bool, Supremum<Unit>>.NullOp() => true;
 
-        Ord ROrderByCompare<bool, Unit>.Compare(bool l, bool r) => l.CompareTo(r).ToOrd();
-        bool SBinOp<bool, bool, bool, Equative<Unit>>.BinOp(bool l, bool r) => EqualByCompare(this, l, r);
-        bool SBinOp<bool, bool, bool, Infimum<Unit>>.BinOp(bool l, bool r) => SupByCompare(this, l, r);
-        bool SBinOp<bool, bool, bool, Supremum<Unit>>.BinOp(bool l, bool r) => InfByCompare(this, l, r);
+        bool SBinOp<bool, bool, bool, Equative<Unit>>.BinOp(bool l, bool r) => EqualByCompare(Compare, l, r);
+        bool SBinOp<bool, bool, bool, Infimum<Unit>>.BinOp(bool l, bool r) => SupByCompare(Compare, l, r);
+        bool SBinOp<bool, bool, bool, Supremum<Unit>>.BinOp(bool l, bool r) => InfByCompare(Compare, l, r);
         
         public res Project<res>(bool Value, Pair<Func<Unit, res>, Func<Unit, res>> Projector) =>
             Value ? Projector.Right()(Unit()) : Projector.Left()(Unit());
 
         public bool Inject<arg>(arg Arg, Either<Func<arg, Unit>, Func<arg, Unit>> Injector) =>
             Injector.Case(Arg, (a, f) => Seq(f(a), false), Arg, (a, f) => Seq(f(a), true));
+
+        public Opt<bool> Succ(bool v) => v ? None<bool>() : Some(true);
+
+        public Opt<bool> Pred(bool v) => v ? Some(false) : None<bool>();
+
+        static Ord Compare(bool l, bool r) => l.CompareTo(r).ToOrd();
     }
 
     [Resolvable]
-    public class AOrd : ROrderByCompare<Ord, Unit>, SBounded<Ord, Unit>
+    public class AString : REquality<string, Unit>, SMonoid<string, Additive<Unit>>, SList<string, char>, SUnitInj<string, char>
+    {
+        public static readonly AString Class = new AString();
+
+        string SNullOp<string, Additive<Unit>>.NullOp() => "";
+        string SBinOp<string, string, string, Additive<Unit>>.BinOp(string l, string r) => Default(l) + Default(r);
+
+        bool SBinOp<string, string, bool, Equative<Unit>>.BinOp(string l, string r) => ReferenceEquals(l, r) || string.Equals(l, r);
+
+        string SSumInj<string, Unit, Pair<char, string>>.Inject<arg>(arg Arg, Either<Func<arg, Unit>, Func<arg, Pair<char, string>>> Injector) =>
+            Injector.Case(Arg, (a, f) => Seq(f(a), ""), Arg, (a, f) => InjectRight(f(a)));
+
+        private static string InjectRight(Pair<char, string> Right) => Right.Left() + Default(Right.Right());
+
+        private static string Default(string v) => v ?? "";
+
+        res SSumProj<string, Unit, Pair<char, string>>.Project<res>(string Value, Pair<Func<Unit, res>, Func<Pair<char, string>, res>> Projector) =>
+            string.IsNullOrEmpty(Value) ? Projector.Left()(Unit()) : Projector.Right()(Pair(Value[0], Value.Substring(1)));
+
+        string SUnitInj<string, char>.Inj(char Value) => Value.ToString();
+    }
+
+    [Resolvable]
+    public class AOrd : ROrder<Ord, Unit>, SBounded<Ord, Unit>, SEnum<Ord>
     {
         public static readonly AOrd Class = new AOrd();
 
         Ord SNullOp<Ord, Infimum<Unit>>.NullOp() => Ord.CreateLt();
         Ord SNullOp<Ord, Supremum<Unit>>.NullOp() => Ord.CreateGt();
 
-        Ord ROrderByCompare<Ord, Unit>.Compare(Ord l, Ord r) => Ord.Compare(l, r);
-        bool SBinOp<Ord, Ord, bool, Equative<Unit>>.BinOp(Ord l, Ord r) => EqualByCompare(this, l, r);
-        Ord SBinOp<Ord, Ord, Ord, Infimum<Unit>>.BinOp(Ord l, Ord r) => SupByCompare(this, l, r);
-        Ord SBinOp<Ord, Ord, Ord, Supremum<Unit>>.BinOp(Ord l, Ord r) => InfByCompare(this, l, r);
+        bool SBinOp<Ord, Ord, bool, Equative<Unit>>.BinOp(Ord l, Ord r) => EqualByCompare(Ord.Compare, l, r);
+        Ord SBinOp<Ord, Ord, Ord, Infimum<Unit>>.BinOp(Ord l, Ord r) => SupByCompare(Ord.Compare, l, r);
+        Ord SBinOp<Ord, Ord, Ord, Supremum<Unit>>.BinOp(Ord l, Ord r) => InfByCompare(Ord.Compare, l, r);
+
+        public Opt<Ord> Succ(Ord v) => v.Case(Some(Eq()), Some(Gt()), None<Ord>());
+        public Opt<Ord> Pred(Ord v) => v.Case(None<Ord>(), Some(Lt()), Some(Eq()));
     }
 
     [Resolvable]
@@ -137,7 +188,7 @@
     }
 
     [Resolvable]
-    public class AEither<left, right> : SSumProj<Either<left, right>, left, right>, SSumInj<Either<left, right>, left, right>
+    public class AEither<left, right> : SSumProj<Either<left, right>, left, right>, SSumInj<Either<left, right>, left, right>, SUnitInj<Either<left, right>, right>
     {
         public static readonly AEither<left, right> Class = new AEither<left, right>();
 
@@ -148,6 +199,8 @@
             Value.Case(Projector.Left(), Projector.Right());
 
         public AEither<right, left> Flip() => AEither<right, left>.Class;
+
+        Either<left, right> SUnitInj<Either<left, right>, right>.Inj(right Value) => Either<left>.Right(Value);
     }
     
     [Resolvable]
@@ -165,7 +218,7 @@
     }
 
     [Resolvable]
-    public class AOpt<val> : SSumProj<Opt<val>, Unit, val>, SSumInj<Opt<val>, Unit, val>
+    public class AOpt<val> : SSumProj<Opt<val>, Unit, val>, SSumInj<Opt<val>, Unit, val>, SUnitInj<Opt<val>, val>
     {
         public static readonly AOpt<val> Class = new AOpt<val>();
 
@@ -174,14 +227,43 @@
 
         public res Project<res>(Opt<val> Value, Pair<Func<Unit, res>, Func<val, res>> Projector) =>
             Value.Case(Projector.Left(), Projector.Right());
+
+        Opt<val> SUnitInj<Opt<val>, val>.Inj(val Value) => Some(Value);
+    }
+    
+    public class AOptMonoidLeft<val, mark> : AOpt<val>, SMonoid<Opt<val>, mark>
+    {
+        Opt<val> SBinOp<Opt<val>, Opt<val>, Opt<val>, mark>.BinOp(Opt<val> l, Opt<val> r) =>
+            l.Map(Some).GetValueOr(r);
+
+        Opt<val> SNullOp<Opt<val>, mark>.NullOp() => None<val>();
+    }
+    
+    public class AOptMonoidRight<val, mark> : AOpt<val>, SMonoid<Opt<val>, mark>
+    {
+        Opt<val> SBinOp<Opt<val>, Opt<val>, Opt<val>, mark>.BinOp(Opt<val> l, Opt<val> r) =>
+            r.Map(Some).GetValueOr(l);
+
+        Opt<val> SNullOp<Opt<val>, mark>.NullOp() => None<val>();
+    }
+
+    public class AOptMonoid<val, mark> : AOpt<val>, SMonoid<Opt<val>, mark>
+    {
+        SSemigroup<val, mark> _semi;
+
+        public AOptMonoid(SSemigroup<val, mark> semi) { _semi = semi; }
+
+        Opt<val> SBinOp<Opt<val>, Opt<val>, Opt<val>, mark>.BinOp(Opt<val> l, Opt<val> r) =>
+            l.Case(r, Fst, r, (rˈ, lv) => Some(rˈ.Case(lv, Fst, lv, (lvˈ, rv) => _semi.BinOp(lvˈ, rv))));
+
+        Opt<val> SNullOp<Opt<val>, mark>.NullOp() => None<val>();
     }
 
     [Resolvable]
     public class AList<val> :
         SMonoid<Lists.List<val>, Additive<Unit>>,
         SUnitInj<Lists.List<val>, val>,
-        SSumInj<Lists.List<val>, Unit, Pair<val, Lists.List<val>>>,
-        SSumProj<Lists.List<val>, Unit, Pair<val, Lists.List<val>>>
+        SList<Lists.List<val>, val>
     {
         public static readonly AList<val> Class = new AList<val>();
 
@@ -190,11 +272,9 @@
         public Lists.List<val> Inj(val from) => Lists.List.Pure(from);
 
         public Lists.List<val> Inject<arg>(arg Arg, Either<Func<arg, Unit>, Func<arg, Pair<val, Lists.List<val>>>> Injector) =>
-            Injector.Case(Arg, (a, f) => InjectLeft(f(a)), Arg, (a, f) => InjectRight(f(a)));
-
-        public Lists.List<val> InjectLeft(Unit Left) => Nil<val>();
-
-        public Lists.List<val> InjectRight(Pair<val, Lists.List<val>> Right) => Cons(Right.Left(), Right.Right());
+            Injector.Case(Arg, (a, f) => Nil<val>(f(a)), Arg, (a, f) => InjectRight(f(a)));
+        
+        private static Lists.List<val> InjectRight(Pair<val, Lists.List<val>> Right) => Cons(Right.Left(), Right.Right());
 
         public res Project<res>(Lists.List<val> Value, Pair<Func<Unit, res>, Func<Pair<val, Lists.List<val>>, res>> Projector) =>
             Value.Case(Projector.Left(), Projector.Right());
@@ -253,5 +333,7 @@
         public static ABool Alg(this bool _) => ABool.Class;
         public static AOrd Alg(this Ord _) => AOrd.Class;
         public static AList<val> Alg<val>(this Lists.List<val> _) => AList<val>.Class;
+        public static AString Alg(this string _) => AString.Class;
+        public static AChar Alg(this char _) => AChar.Class;
     }
 }

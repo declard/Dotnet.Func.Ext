@@ -19,6 +19,11 @@ namespace Dotnet.Func.Ext
         /// Three functions composition
         /// </summary>
         public static Func<a, d> Compose<a, b, c, d>(Func<c, d> h, Func<b, c> g, Func<a, b> f) => v => h(g(f(v)));
+        
+        /// <summary>
+        /// Composition extension
+        /// </summary>
+        public static Func<a, c> o<a, b, c>(this Func<b, c> that, Func<a, b> f) => Compose(that, f);
 
         /// <summary>
         /// Create a function which ignores input and returns value, evaluated by the agrument function
@@ -47,34 +52,86 @@ namespace Dotnet.Func.Ext
         /// <summary>
         /// Take a function and flip its arguments
         /// </summary>
-        public static Func<inB, inA, outˈ> Flip<inA, inB, outˈ>(this Func<inA, inB, outˈ> f) => (a, b) => f(b, a);
+        public static Func<in2, in1, outˈ> Flip<in1, in2, outˈ>(this Func<in1, in2, outˈ> f) => (a, b) => f(b, a);
 
         /// <summary>
         /// Currying for two args function
         /// </summary>
-        public static Func<inA, Func<inB, outˈ>> Curry<inA, inB, outˈ>(Func<inA, inB, outˈ> f) => a => b => f(a, b);
+        public static Func<in1, Func<in2, outˈ>> Curry<in1, in2, outˈ>(Func<in1, in2, outˈ> f) => a => b => f(a, b);
         /// <summary>
         /// Currying for three args function
         /// </summary>
-        public static Func<inA, Func<inB, Func<inC, outˈ>>> Curry<inA, inB, inC, outˈ>(Func<inA, inB, inC, outˈ> f) => a => b => c => f(a, b, c);
+        public static Func<in1, Func<in2, Func<in3, outˈ>>> Curry<in1, in2, in3, outˈ>(Func<in1, in2, in3, outˈ> f) => a => b => c => f(a, b, c);
         /// <summary>
         /// Currying for four args function
         /// </summary>
-        public static Func<inA, Func<inB, Func<inC, Func<inD, outˈ>>>> Curry<inA, inB, inC, inD, outˈ>(Func<inA, inB, inC, inD, outˈ> f) => a => b => c => d => f(a, b, c, d);
-        
+        public static Func<in1, Func<in2, Func<in3, Func<in4, outˈ>>>> Curry<in1, in2, in3, in4, outˈ>(Func<in1, in2, in3, in4, outˈ> f) => a => b => c => d => f(a, b, c, d);
+
+
+        /// <summary>
+        /// Convert two args function into a function of 2-tuple
+        /// </summary>
+        public static Func<Tuple<in1, in2>, outˈ> Tuplify<in1, in2, outˈ>(Func<in1, in2, outˈ> f) =>
+            t => f(t.Item1, t.Item2);
+        /// <summary>
+        /// Convert three args function into a function of 3-tuple
+        /// </summary>
+        public static Func<Tuple<in1, in2, in3>, outˈ> Tuplify<in1, in2, in3, outˈ>(Func<in1, in2, in3, outˈ> f) =>
+            t => f(t.Item1, t.Item2, t.Item3);
+        /// <summary>
+        /// Convert four args function into a function of 4-tuple
+        /// </summary>
+        public static Func<Tuple<in1, in2, in3, in4>, outˈ> Tuplify<in1, in2, in3, in4, outˈ>(Func<in1, in2, in3, in4, outˈ> f) =>
+            t => f(t.Item1, t.Item2, t.Item3, t.Item4);
+        /// <summary>
+        /// Convert five args function into a function of 5-tuple
+        /// </summary>
+        public static Func<Tuple<in1, in2, in3, in4, in5>, outˈ> Tuplify<in1, in2, in3, in4, in5, outˈ>(Func<in1, in2, in3, in4, in5, outˈ> f) =>
+            t => f(t.Item1, t.Item2, t.Item3, t.Item4, t.Item5);
+        /// <summary>
+        /// Convert six args function into a function of 6-tuple
+        /// </summary>
+        public static Func<Tuple<in1, in2, in3, in4, in5, in6>, outˈ> Tuplify<in1, in2, in3, in4, in5, in6, outˈ>(Func<in1, in2, in3, in4, in5, in6, outˈ> f) =>
+            t => f(t.Item1, t.Item2, t.Item3, t.Item4, t.Item5, t.Item6);
+
         /// <summary>
         /// Disambiguation between `Func` and `Expression`
         /// </summary>
-        public static Func<a, b> Func<a, b>(this Func<a, b> f) => f;
+        public static Func<a, b> Func<a, b>(Func<a, b> fˈ) => fˈ;
         /// <summary>
         /// Disambiguation between `Func` and `Expression`
         /// </summary>
-        public static Func<a, b, c> Func<a, b, c>(this Func<a, b, c> f) => f;
+        public static Func<a, b, c> Func<a, b, c>(Func<a, b, c> fˈ) => fˈ;
         /// <summary>
         /// Disambiguation between `Func` and `Expression`
         /// </summary>
-        public static Func<a, b, c, d> Func<a, b, c, d>(this Func<a, b, c, d> f) => f;
-        
+        public static Func<a, b, c, d> Func<a, b, c, d>(Func<a, b, c, d> fˈ) => fˈ;
+        /// <summary>
+        /// Disambiguation between `Func` and `Expression`
+        /// </summary>
+        public static Func<a, b, c, d, e> Func<a, b, c, d, e>(Func<a, b, c, d, e> fˈ) => fˈ;
+        /// <summary>
+        /// Disambiguation between `Func` and `Expression`
+        /// </summary>
+        public static Func<a, b, c, d, e, f> Func<a, b, c, d, e, f>(Func<a, b, c, d, e, f> fˈ) => fˈ;
+
+        /// <summary>
+        /// Disambiguation between `Func` and `Expression`
+        /// </summary>
+        public static Func<a, Func<b, c>> Curried<a, b, c>(Func<a, Func<b, c>> fˈ) => fˈ;
+        /// <summary>
+        /// Disambiguation between `Func` and `Expression`
+        /// </summary>
+        public static Func<a, Func<b, Func<c, d>>> Curried<a, b, c, d>(Func<a, Func<b, Func<c, d>>> fˈ) => fˈ;
+        /// <summary>
+        /// Disambiguation between `Func` and `Expression`
+        /// </summary>
+        public static Func<a, Func<b, Func<c, Func<d, e>>>> Curried<a, b, c, d, e>(Func<a, Func<b, Func<c, Func<d, e>>>> fˈ) => fˈ;
+        /// <summary>
+        /// Disambiguation between `Func` and `Expression`
+        /// </summary>
+        public static Func<a, Func<b, Func<c, Func<d, Func<e, f>>>>> Curried<a, b, c, d, e, f>(Func<a, Func<b, Func<c, Func<d, Func<e, f>>>>> fˈ) => fˈ;
+
         /// <summary>
         /// Isomorphism between `a` and `Func{a}`
         /// </summary>

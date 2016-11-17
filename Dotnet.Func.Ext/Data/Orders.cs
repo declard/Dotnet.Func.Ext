@@ -6,6 +6,8 @@
     using static Ctors;
     using static Exceptions;
     using static Functions;
+    using static Algebras.Structures;
+    using Algebras;
 
     public static partial class Ctors
     {
@@ -76,7 +78,7 @@
     public static class Orders
     {
         /// <summary>
-        /// Well-order
+        /// Well-order: less than, equals to, greater than
         /// </summary>
         public struct Ord
         {
@@ -96,7 +98,7 @@
             public static Ord CreateGt() => new Ord(Ordˈ.Gt);
 
             /// <summary>
-            /// Basic coalgebra (closure-evading)
+            /// Basic pattern matcher (closure-evading)
             /// </summary>
             public res Case<res, ltCtx, eqCtx, gtCtx>(ltCtx ltCtxˈ, Func<ltCtx, Unit, res> Lt, eqCtx eqCtxˈ, Func<eqCtx, Unit, res> Eq, gtCtx gtCtxˈ, Func<gtCtx, Unit, res> Gt)
             {
@@ -111,9 +113,6 @@
             }
 
             public static Ord Compare(Ord left, Ord right) => left._ord.CompareTo(right._ord).ToOrd();
-
-            public static bool operator == (Ord left, Ord right) => Compare(left, right).IsEq();
-            public static bool operator !=(Ord left, Ord right) => (left == right).Not();
 
             public override string ToString() => this.Case("Lt()", "Eq()", "Gt()");
         }
@@ -132,21 +131,37 @@
         public static int ToInt(this Ord that) => that.Case(-1, 0, 1);
 
         /// <summary>
-        /// From well-order to equality
+        /// Not equal
         /// </summary>
-        public static bool ToEq(this Ord that) => that.IsEq();
+        public static bool IsNeq(this Ord that) => that.IsEq().Not();
 
         /// <summary>
-        /// Basic coalgebra
+        /// Not less than
+        /// </summary>
+        public static bool IsNlt(this Ord that) => that.IsLt().Not();
+
+        /// <summary>
+        /// Not greater than
+        /// </summary>
+        public static bool IsNgt(this Ord that) => that.IsGt().Not();
+
+        /// <summary>
+        /// Basic pattern matcher
         /// </summary>
         public static res Case<res>(this Ord that, res Lt, res Eq, res Gt) =>
             that.Case(Lt, Fst, Eq, Fst, Gt, Fst);
 
         /// <summary>
-        /// Basic coalgebra (lazy)
+        /// Basic pattern matcher (lazy)
         /// </summary>
         public static res Case<res>(this Ord that, Func<Unit, res> Lt, Func<Unit, res> Eq, Func<Unit, res> Gt) =>
             that.Case<Func<Unit, res>>(Lt, Eq, Gt).ToValue();
+
+        /// <summary>
+        /// Check whether value is on the range (including bounding points)
+        /// </summary>
+        public static bool IsOnBetween<v, a>(this v value, v lower, v upper, a alg) where a : ROrder<v, Unit> =>
+            alg.Compare(value, lower).IsNlt() && alg.Compare(value, upper).IsNgt();
 
         /// <summary>
         /// Create well-order from inequalities

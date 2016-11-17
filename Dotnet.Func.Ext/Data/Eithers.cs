@@ -18,7 +18,7 @@
         /// Type inference helper class
         /// </summary>
         /// <typeparam name="t">Another type</typeparam>
-        public static class Either<t>
+        public class Either<t>
         {
             /// <summary>
             /// Left injection
@@ -87,7 +87,7 @@
                 new Either<left, right> { _right = value, _left = default(left), _isRight = true };
             
             /// <summary>
-            /// Basic closure-evading coalgebra
+            /// Basic closure-evading pattern matcher
             /// </summary>
             public res Case<leftCtx, rightCtx, res>(leftCtx leftCtxˈ, Func<leftCtx, left, res> Left, rightCtx rightCtxˈ, Func<rightCtx, right, res> Right) =>
                 !_isRight ? Left(leftCtxˈ, this.Left()) : Right(rightCtxˈ, this.Right());
@@ -105,6 +105,20 @@
             /// </summary>
             public static Either<left, right> Pure<left, right>(right value) => Either<left>.Right(value);
         }
+
+        public struct RightEither<right>
+        {
+            right _v;
+
+            public RightEither(right v) { _v = v; }
+
+            public Either<left, right> With<left>() => Either.Pure<left, right>(_v);
+        }
+
+        /// <summary>
+        /// Point operation as an extension
+        /// </summary>
+        public static RightEither<right> PureEither<right>(this right that) => new RightEither<right>(that);
 
         /// <summary>
         /// Bifunctor map: transform the left or right inside of the container

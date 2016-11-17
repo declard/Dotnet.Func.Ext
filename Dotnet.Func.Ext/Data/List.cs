@@ -87,7 +87,7 @@ namespace Dotnet.Func.Ext.Data
             private Opt<Node> _node;
 
             /// <summary>
-            /// Basic coalgebra (closure-evading)
+            /// Basic pattern matcher (closure-evading)
             /// </summary>
             public res Case<leftCtx, rightCtx, res>(leftCtx leftCtxˈ, Func<leftCtx, Unit, res> Left, rightCtx rightCtxˈ, Func<rightCtx, Pair<val, List<val>>, res> Right) =>
                 _node.Case(leftCtxˈ, Left, Pair(rightCtxˈ, Right), (rightPair, rightValue) => rightPair.Right()(rightPair.Left(), Pair(rightValue.Value, rightValue.Next.Tail)));
@@ -105,34 +105,16 @@ namespace Dotnet.Func.Ext.Data
             /// <param name="tail">List's tail</param>
             public static List<val> CreateCons(val head, List<val> tail) =>
                 new List<val> { _node = Some(new Node { Value = head, Next = new Next { Tail = tail } }) };
-
-
-            private class Enumerator : SCG.IEnumerator<val>
+            
+            public SCG.IEnumerator<val> GetEnumerator()
             {
-                public List<val> Next;
-
-                public val Current { get; private set; }
-
-                object IEnumerator.Current => Current;
-
-                public bool MoveNext()
+                var next = this;
+                while (next.IsCons())
                 {
-                    if (Next.IsNil())
-                        return false;
-
-                    Current = Next.Head();
-
-                    Next = Next.Tail();
-
-                    return true;
+                    yield return next.Head();
+                    next = next.Tail();
                 }
-
-                public void Dispose() { }
-
-                public void Reset() => NotImplemented<Unit>(Unit()); // it's not COM-interoperable :]
             }
-
-            public SCG.IEnumerator<val> GetEnumerator() => new Enumerator { Next = this };
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
             public override string ToString() => _node.IsNone() ? "Nil()" : $"Cons({_node.Some().Value}, {_node.Some().Next.Tail})";
@@ -146,6 +128,11 @@ namespace Dotnet.Func.Ext.Data
             /// <example>pure 1 → [1]</example>
             public static List<val> Pure<val>(val e) => Ctors.Cons(e, Nil<val>());
         }
+
+        /// <summary>
+        /// Point operation as an extension
+        /// </summary>
+        public static List<val> PureList<val>(this val that) => List.Pure(that);
 
         /// <summary>
         /// Extend a list with an element

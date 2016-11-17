@@ -8,10 +8,11 @@ namespace Dotnet.Func.Ext.Tests.Collections
     {
         private static int[] Inf(int v) => Enumerable.Repeat(v, 10).ToArray();
 
+
         [Test, TestCaseSource(nameof(EnumFromByToCases))]
         public void EnumFromByTo(int from, int by, int to, int[] expected)
         {
-            var actual = Ext.Collections.Ranges.EnumFromByTo(from, by, to, Algebras.AInt32.Class).Take(10).ToArray();
+            var actual = Ext.Collections.Ranges.EnumFromByTo(from, by, to).Take(10).ToArray();
 
             Assert.AreEqual(expected, actual);
         }
@@ -28,11 +29,11 @@ namespace Dotnet.Func.Ext.Tests.Collections
             new object[] { -2, -1, 0, new int[] { } },
             new object[] { -2, -1, +1, new int[] { } },
             new object[] { -2, -1, +2, new int[] { } },
-            new object[] { -2, 0, -2, Inf(-2) },
-            new object[] { -2, 0, -1, Inf(-2) },
-            new object[] { -2, 0, 0, Inf(-2) },
-            new object[] { -2, 0, +1, Inf(-2) },
-            new object[] { -2, 0, +2, Inf(-2) },
+            new object[] { -2, 0, -2, new int[] { -2 } },
+            new object[] { -2, 0, -1, new int[] { } },
+            new object[] { -2, 0, 0, new int[] { } },
+            new object[] { -2, 0, +1, new int[] { } },
+            new object[] { -2, 0, +2, new int[] { } },
             new object[] { -2, +1, -2, new int[] { -2 } },
             new object[] { -2, +1, -1, new int[] { -2, -1 } },
             new object[] { -2, +1, 0, new int[] { -2, -1, 0 } },
@@ -54,11 +55,11 @@ namespace Dotnet.Func.Ext.Tests.Collections
             new object[] { -1, -1, 0, new int[] { } },
             new object[] { -1, -1, +1, new int[] { } },
             new object[] { -1, -1, +2, new int[] { } },
-            new object[] { -1, 0, -2, Inf(-1) },
-            new object[] { -1, 0, -1, Inf(-1) },
-            new object[] { -1, 0, 0, Inf(-1) },
-            new object[] { -1, 0, +1, Inf(-1) },
-            new object[] { -1, 0, +2, Inf(-1) },
+            new object[] { -1, 0, -2, new int[] { } },
+            new object[] { -1, 0, -1, new int[] { -1 } },
+            new object[] { -1, 0, 0, new int[] { } },
+            new object[] { -1, 0, +1, new int[] { } },
+            new object[] { -1, 0, +2, new int[] { } },
             new object[] { -1, +1, -2, new int[] { } },
             new object[] { -1, +1, -1, new int[] { -1 } },
             new object[] { -1, +1, 0, new int[] { -1, 0 } },
@@ -80,11 +81,11 @@ namespace Dotnet.Func.Ext.Tests.Collections
             new object[] { 0, -1, 0, new int[] { 0 } },
             new object[] { 0, -1, +1, new int[] { } },
             new object[] { 0, -1, +2, new int[] { } },
-            new object[] { 0, 0, -2, Inf(0) },
-            new object[] { 0, 0, -1, Inf(0) },
-            new object[] { 0, 0, 0, Inf(0) },
-            new object[] { 0, 0, +1, Inf(0) },
-            new object[] { 0, 0, +2, Inf(0) },
+            new object[] { 0, 0, -2, new int[] { } },
+            new object[] { 0, 0, -1, new int[] { } },
+            new object[] { 0, 0, 0, new int[] { 0 } },
+            new object[] { 0, 0, +1, new int[] { } },
+            new object[] { 0, 0, +2, new int[] { } },
             new object[] { 0, +1, -2, new int[] { } },
             new object[] { 0, +1, -1, new int[] { } },
             new object[] { 0, +1, 0, new int[] { 0 } },
@@ -106,11 +107,11 @@ namespace Dotnet.Func.Ext.Tests.Collections
             new object[] { +1, -1, 0, new int[] { +1, 0 } },
             new object[] { +1, -1, +1, new int[] { +1 } },
             new object[] { +1, -1, +2, new int[] { } },
-            new object[] { +1, 0, -2, Inf(+1) },
-            new object[] { +1, 0, -1, Inf(+1) },
-            new object[] { +1, 0, 0, Inf(+1) },
-            new object[] { +1, 0, +1, Inf(+1) },
-            new object[] { +1, 0, +2, Inf(+1) },
+            new object[] { +1, 0, -2, new int[] { } },
+            new object[] { +1, 0, -1, new int[] { } },
+            new object[] { +1, 0, 0, new int[] { } },
+            new object[] { +1, 0, +1, new int[] { +1 } },
+            new object[] { +1, 0, +2, new int[] { } },
             new object[] { +1, +1, -2, new int[] { } },
             new object[] { +1, +1, -1, new int[] { } },
             new object[] { +1, +1, 0, new int[] { } },
@@ -132,11 +133,11 @@ namespace Dotnet.Func.Ext.Tests.Collections
             new object[] { +2, -1, 0, new int[] { +2, +1, 0 } },
             new object[] { +2, -1, +1, new int[] { +2, +1 } },
             new object[] { +2, -1, +2, new int[] { +2 } },
-            new object[] { +2, 0, -2, Inf(+2) },
-            new object[] { +2, 0, -1, Inf(+2) },
-            new object[] { +2, 0, 0, Inf(+2) },
-            new object[] { +2, 0, +1, Inf(+2) },
-            new object[] { +2, 0, +2, Inf(+2) },
+            new object[] { +2, 0, -2, new int[] { } },
+            new object[] { +2, 0, -1, new int[] { } },
+            new object[] { +2, 0, 0, new int[] { } },
+            new object[] { +2, 0, +1, new int[] { } },
+            new object[] { +2, 0, +2, new int[] { +2 } },
             new object[] { +2, +1, -2, new int[] { } },
             new object[] { +2, +1, -1, new int[] { } },
             new object[] { +2, +1, 0, new int[] { } },
@@ -153,18 +154,18 @@ namespace Dotnet.Func.Ext.Tests.Collections
         [Test, TestCaseSource(nameof(EnumFromThenToCases))]
         public void EnumFromThenTo(int from, int then, int to, int[] expected)
         {
-            var actual = Ext.Collections.Ranges.EnumFromThenTo(from, then, to, Algebras.AInt32.Class).Take(10).ToArray();
+            var actual = Ext.Collections.Ranges.EnumFromThenTo(from, then, to).Take(10).ToArray();
 
             Assert.AreEqual(expected, actual);
         }
 
         static object[] EnumFromThenToCases =
         {
-            new object[] { -2, -2, -2, Inf(-2) },
-            new object[] { -2, -2, -1, Inf(-2) },
-            new object[] { -2, -2, 0, Inf(-2) },
-            new object[] { -2, -2, +1, Inf(-2) },
-            new object[] { -2, -2, +2, Inf(-2) },
+            new object[] { -2, -2, -2, new int[] { -2 } },
+            new object[] { -2, -2, -1, new int[] { } },
+            new object[] { -2, -2, 0, new int[] { } },
+            new object[] { -2, -2, +1, new int[] { } },
+            new object[] { -2, -2, +2, new int[] { } },
             new object[] { -2, -1, -2, new int[] { -2 } },
             new object[] { -2, -1, -1, new int[] { -2, -1 } },
             new object[] { -2, -1, 0, new int[] { -2, -1, 0 } },
@@ -191,11 +192,11 @@ namespace Dotnet.Func.Ext.Tests.Collections
             new object[] { -1, -2, 0, new int[] { } },
             new object[] { -1, -2, +1, new int[] { } },
             new object[] { -1, -2, +2, new int[] { } },
-            new object[] { -1, -1, -2, Inf(-1) },
-            new object[] { -1, -1, -1, Inf(-1) },
-            new object[] { -1, -1, 0, Inf(-1) },
-            new object[] { -1, -1, +1, Inf(-1) },
-            new object[] { -1, -1, +2, Inf(-1) },
+            new object[] { -1, -1, -2, new int[] { } },
+            new object[] { -1, -1, -1, new int[] { -1 } },
+            new object[] { -1, -1, 0, new int[] { } },
+            new object[] { -1, -1, +1, new int[] { } },
+            new object[] { -1, -1, +2, new int[] { } },
             new object[] { -1, 0, -2, new int[] { } },
             new object[] { -1, 0, -1, new int[] { -1 } },
             new object[] { -1, 0, 0, new int[] { -1, 0 } },
@@ -222,11 +223,11 @@ namespace Dotnet.Func.Ext.Tests.Collections
             new object[] { 0, -1, 0, new int[] { 0 } },
             new object[] { 0, -1, +1, new int[] { } },
             new object[] { 0, -1, +2, new int[] { } },
-            new object[] { 0, 0, -2, Inf(0) },
-            new object[] { 0, 0, -1, Inf(0) },
-            new object[] { 0, 0, 0, Inf(0) },
-            new object[] { 0, 0, +1, Inf(0) },
-            new object[] { 0, 0, +2, Inf(0) },
+            new object[] { 0, 0, -2, new int[] { } },
+            new object[] { 0, 0, -1, new int[] { } },
+            new object[] { 0, 0, 0, new int[] { 0 } },
+            new object[] { 0, 0, +1, new int[] { } },
+            new object[] { 0, 0, +2, new int[] { } },
             new object[] { 0, +1, -2, new int[] { } },
             new object[] { 0, +1, -1, new int[] { } },
             new object[] { 0, +1, 0, new int[] { 0 } },
@@ -253,11 +254,11 @@ namespace Dotnet.Func.Ext.Tests.Collections
             new object[] { +1, 0, 0, new int[] { +1, 0 } },
             new object[] { +1, 0, +1, new int[] { +1 } },
             new object[] { +1, 0, +2, new int[] { } },
-            new object[] { +1, +1, -2, Inf(+1) },
-            new object[] { +1, +1, -1, Inf(+1) },
-            new object[] { +1, +1, 0, Inf(+1) },
-            new object[] { +1, +1, +1, Inf(+1) },
-            new object[] { +1, +1, +2, Inf(+1) },
+            new object[] { +1, +1, -2, new int[] { } },
+            new object[] { +1, +1, -1, new int[] { } },
+            new object[] { +1, +1, 0, new int[] { } },
+            new object[] { +1, +1, +1, new int[] { +1 } },
+            new object[] { +1, +1, +2, new int[] { } },
             new object[] { +1, +2, -2, new int[] { } },
             new object[] { +1, +2, -1, new int[] { } },
             new object[] { +1, +2, 0, new int[] { } },
@@ -284,17 +285,17 @@ namespace Dotnet.Func.Ext.Tests.Collections
             new object[] { +2, +1, 0, new int[] { +2, +1, 0 } },
             new object[] { +2, +1, +1, new int[] { +2, +1 } },
             new object[] { +2, +1, +2, new int[] { +2 } },
-            new object[] { +2, +2, -2, Inf(+2) },
-            new object[] { +2, +2, -1, Inf(+2) },
-            new object[] { +2, +2, 0, Inf(+2) },
-            new object[] { +2, +2, +1, Inf(+2) },
-            new object[] { +2, +2, +2, Inf(+2) },
+            new object[] { +2, +2, -2, new int[] { } },
+            new object[] { +2, +2, -1, new int[] { } },
+            new object[] { +2, +2, 0, new int[] { } },
+            new object[] { +2, +2, +1, new int[] { } },
+            new object[] { +2, +2, +2, new int[] { +2 } },
         };
 
         [Test, TestCaseSource(nameof(EnumFromByCases))]
         public void EnumFromBy(int from, int by, int[] expected)
         {
-            var actual = Ext.Collections.Ranges.EnumFromBy(from, by, Algebras.AInt32.Class).Take(5).ToArray();
+            var actual = Ext.Collections.Ranges.EnumFromBy(from, by).Take(5).ToArray();
 
             Assert.AreEqual(expected, actual);
         }
@@ -323,7 +324,7 @@ namespace Dotnet.Func.Ext.Tests.Collections
         [Test, TestCaseSource(nameof(EnumFromThenCases))]
         public void EnumFromThen(int from, int then, int[] expected)
         {
-            var actual = Ext.Collections.Ranges.EnumFromThen(from, then, Algebras.AInt32.Class).Take(5).ToArray();
+            var actual = Ext.Collections.Ranges.EnumFromThen(from, then).Take(5).ToArray();
 
             Assert.AreEqual(expected, actual);
         }
@@ -352,7 +353,7 @@ namespace Dotnet.Func.Ext.Tests.Collections
         [Test, TestCaseSource(nameof(EnumFromCases))]
         public void EnumFrom(int from, int[] expected)
         {
-            var actual = Ext.Collections.Ranges.EnumFrom(from, Algebras.AInt32.Class).Take(5).ToArray();
+            var actual = Ext.Collections.Ranges.EnumFrom(from).Take(5).ToArray();
 
             Assert.AreEqual(expected, actual);
         }
@@ -367,7 +368,7 @@ namespace Dotnet.Func.Ext.Tests.Collections
         [Test, TestCaseSource(nameof(EnumFromToCases))]
         public void EnumFromTo(int from, int to, int[] expected)
         {
-            var actual = Ext.Collections.Ranges.EnumFromTo(from, to, Algebras.AInt32.Class).ToArray();
+            var actual = Ext.Collections.Ranges.EnumFromTo(from, to).ToArray();
 
             Assert.AreEqual(expected, actual);
         }
@@ -392,5 +393,6 @@ namespace Dotnet.Func.Ext.Tests.Collections
             new object[] { +1, +1, new int[] { +1 } },
             new object[] { +1, +2, new int[] { +1, +2 } },
         };
+        
     }
 }
