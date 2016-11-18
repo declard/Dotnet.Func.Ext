@@ -93,16 +93,17 @@ namespace Dotnet.Func.Ext.Tests.Data
         [Test]
         public void CallCcTest()
         {
-            var validateName = Func<string, Func<string, Cont<string, Unit>>, Cont<string, Unit>> ((name, exit) =>
-                name == "" ? exit("You forgot to tell me your name!") : Ctors.Unit().PureCont().With<string>());
+            var validateName = Func<string, Func<string, Cont<string, Unit>>, Cont<string, Unit>>((name, exit) =>
+               name == "" ? exit("You forgot to tell me your name!") : ContUnit<string>(Ctors.Unit()));
 
-            var whatsYourName = Func<string, string>(name => CallCC<string, string, Unit>(exit =>
-                validateName(name, exit).Bind(_ =>
-                $"Welcome, {name}!".PureCont().With<string>())).Uncont());
+            var whatsYourName = Func<string, string>(name => Run(Id,
+                from response in CallCC<string, string, Unit>(exit =>
+                    from _ in validateName(name, exit)
+                    select $"Welcome, {name}!")
+                select response));
 
             Assert.AreEqual(whatsYourName("Mr. Callback"), "Welcome, Mr. Callback!");
             Assert.AreEqual(whatsYourName(""), "You forgot to tell me your name!");
         }
-        
     }
 }

@@ -153,20 +153,20 @@ namespace Dotnet.Func.Ext
         /// <summary>
         /// Isomorphism between `Func{a, _}` and `Action{a}`
         /// </summary>
-        public static Action<inˈ> ToAction<inˈ, outˈ>(this Func<inˈ, outˈ> that) => v => that(v);
+        public static Action<inˈ> AsAct<inˈ, outˈ>(this Func<inˈ, outˈ> that) => v => that(v);
         /// <summary>
         /// Isomorphism between `Action{a}` and `Func{a, _}`
         /// </summary>
-        public static Func<inˈ, Unit> ToFunc<inˈ>(this Action<inˈ> that) => v => { that(v); return Unit(); };
+        public static Func<inˈ, Unit> AsFunc<inˈ>(this Action<inˈ> that) => v => { that(v); return Unit(); };
 
         /// <summary>
         /// Isomorphism between `Func{Unit, _}` and `Action`
         /// </summary>
-        public static Action ToAction<outˈ>(this Func<Unit, outˈ> that) => () => that(Unit());
+        public static Action AsActU<outˈ>(this Func<Unit, outˈ> that) => () => that(Unit());
         /// <summary>
         /// Isomorphism between `Action` and `Func{Unit, _}`
         /// </summary>
-        public static Func<Unit, Unit> ToFunc(this Action that) => _ => { that(); return Unit(); };
+        public static Func<Unit, Unit> AsFunc(this Action that) => _ => { that(); return Unit(); };
 
         /// <summary>
         /// Contravariant functor over a function

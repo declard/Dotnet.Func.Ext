@@ -48,9 +48,8 @@
 
         /// <summary>
         /// Cut enumerable into chunks of a specified size
-        /// Underfilled trailing chunk (if any) is ignored, every chunk is guaranteed to have a specified size
         /// </summary>
-        public static IEnumerable<IReadOnlyList<val>> ChunkBy<val>(this IEnumerable<val> that, int chunkSize)
+        public static IEnumerable<IReadOnlyList<val>> ChunkBy<val>(this IEnumerable<val> that, int chunkSize, bool ignoreUnderfilled = false)
         {
             using (var e = that.GetEnumerator())
             {
@@ -63,7 +62,12 @@
                     while (indexInChunk++ < chunkSize)
                     {
                         if (!e.MoveNext())
+                        {
+                            if (!ignoreUnderfilled)
+                                yield return chunk;
+
                             yield break;
+                        }
 
                         chunk.Add(e.Current);
                     }
@@ -221,17 +225,17 @@
         public static IEnumerable<val> EmptyIfNull<val>(this IEnumerable<val> that) => that ?? System.Linq.Enumerable.Empty<val>();
 
         /// <summary>
-        /// Replaces null y an empty IReadOnlyDictionary
+        /// Replaces null by an empty IReadOnlyDictionary
         /// </summary>
         public static IReadOnlyDictionary<key, val> EmptyIfNull<key, val>(this IReadOnlyDictionary<key, val> that) => that ?? new Dictionary<key, val>();
 
         /// <summary>
-        /// Replaces null y an empty IReadOnlyList
+        /// Replaces null by an empty IReadOnlyList
         /// </summary>
         public static IReadOnlyList<val> EmptyIfNull<val>(this IReadOnlyList<val> that) => that ?? new val[] { };
 
         /// <summary>
-        /// Replaces null y an empty IReadOnlyCollection
+        /// Replaces null by an empty IReadOnlyCollection
         /// </summary>
         public static IReadOnlyCollection<val> EmptyIfNull<val>(this IReadOnlyCollection<val> that) => that ?? new val[] { };
 
@@ -340,7 +344,7 @@
         /// Foreach function
         /// </summary>
         public static void Foreach<val>(this IEnumerable<val> that, Action<val> action) =>
-            that.Foreach(action.ToFunc());
+            that.Foreach(action.AsFunc());
 
         /// <summary>
         /// Foreach function
@@ -385,31 +389,17 @@
         /// <summary>
         /// Builds an enumerable with a builder function (constantly applying transformation)
         /// </summary>
-        public static IEnumerable<val> Generate<val>(this val seed, Func<val, Opt<val>> next)
-        {
-            var current = seed;
-
-            while (true)
-            {
-                yield return current;
-
-                var to = next(current);
-
-                if (!to.IsSome())
-                    yield break;
-
-                current = to.Some();
-            }
-        }
+        public static IEnumerable<val> Generate<val>(this val seed, Func<val, Opt<val>> next) =>
+            seed.Unfold(next.Map(f => f.Map(Pair)));
 
         /// <summary>
         /// Builds an infinite enumerable with a builder function (constantly applying transformation)
         /// </summary>
         /// <example>iterate 1 (λv.v * 2) → [1, 2, 4, 8, 16, 32..]</example>
         public static IEnumerable<val> Iterate<val>(this val seed, Func<val, val> next) =>
-            Generate(seed, Compose(Opt.Pure, next));
+            seed.Unfold(next.Map(Pair));
 
-        
+
         /// <summary>
         /// Unforgetful memoizer
         /// </summary>

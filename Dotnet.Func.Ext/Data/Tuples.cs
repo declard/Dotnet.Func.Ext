@@ -16,6 +16,11 @@
         public static Pair<left, right> Pair<left, right>(left l, right r) => Tuples.Pair<left, right>.Create(l, r);
 
         /// <summary>
+        /// Symmetrical Pair injection
+        /// </summary>
+        public static Pair<val, val> Pair<val>(val v) => Pair(v, v);
+
+        /// <summary>
         /// KVP usual injection
         /// </summary>
         public static KeyValuePair<key, value> KeyValuePair<key, value>(key k, value v) => new KeyValuePair<key, value>(k, v);

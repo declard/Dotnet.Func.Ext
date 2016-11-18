@@ -14,8 +14,6 @@
         /// <summary>
         /// False injection
         /// </summary>
-        /// <param name="_"></param>
-        /// <returns></returns>
         public static bool False(Unit _) => false;
         /// <summary>
         /// True ctor
@@ -24,8 +22,6 @@
         /// <summary>
         /// True injection
         /// </summary>
-        /// <param name="_"></param>
-        /// <returns></returns>
         public static bool True(Unit _) => true;
     }
 

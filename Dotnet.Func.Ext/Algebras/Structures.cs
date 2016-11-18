@@ -59,11 +59,6 @@
         {
         }
 
-        //public interface ROrderByCompare<type, mark> : ROrder<type, mark>
-        //{
-        //    Ord Compare(type l, type r);
-        //}
-
         public interface SNullOp<type, mark>
         {
             type NullOp();
