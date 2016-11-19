@@ -6,11 +6,11 @@ namespace Dotnet.Func.Ext.Data
     using static Algebras.Structures;
     using static Ctors;
     using static Exceptions;
-    using static Functions;
     using static Lists;
     using static Optionals;
     using static Tuples;
     using static Units;
+    using static Core.Functions;
     using Algebras;
     using SCG = System.Collections.Generic;
 

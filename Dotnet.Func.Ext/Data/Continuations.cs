@@ -2,6 +2,7 @@
 {
     using System;
     using static Units;
+    using static Core.Functions;
 
     public static partial class Ctors
     {
@@ -48,7 +49,7 @@
         public static class Cont
         {
             /// <summary>
-            /// Pointer functor unary operation
+            /// Pointed functor unary operation
             /// </summary>
             public static Cont<r, a> Pure<r, a>(a aˈ) => Cont<r, a>.Create(k => k(aˈ));
         }
@@ -70,7 +71,7 @@
         /// <summary>
         /// Execute continuation when argument type and return types are same
         /// </summary>
-        public static r Uncont<r>(this Cont<r, r> that) => that.Case(Functions.Id);
+        public static r Uncont<r>(this Cont<r, r> that) => that.Case(Id);
 
         /// <summary>
         /// Put a function into a continuation, effectively running it
@@ -104,7 +105,7 @@
         /// <summary>
         /// Applies a function inside an applicative context (see Applicative functors)
         /// </summary>
-        public static Cont<r, b> App<r, a, b>(this Cont<r, Func<a, b>> f, Cont<r, a> aˈ) =>
+        public static Cont<r, b> Ap<r, a, b>(this Cont<r, Func<a, b>> f, Cont<r, a> aˈ) =>
             Cont<r, b>.Create(k => aˈ.Case(aa => f.Case(ff => k(ff(aa)))));
 
         /// <summary>

@@ -114,6 +114,8 @@
         /// </summary>
         public static Pair<right, left> Flip<left, right>(this Pair<left, right> pair) => Pair(pair.Right(), pair.Left());
 
+        public static Pair<left, right> x<left, right>(this left l, right r) => Pair(l, r);
+
         #endregion
 
         #region Tuple

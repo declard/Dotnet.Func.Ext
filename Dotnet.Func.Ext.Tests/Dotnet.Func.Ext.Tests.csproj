@@ -47,6 +47,7 @@
     <Compile Include="Tests\Collections\Ranges.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\Data\Continuations.cs" />
+    <Compile Include="Tests\Data\Functions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Dotnet.Func.Ext\Dotnet.Func.Ext.csproj">

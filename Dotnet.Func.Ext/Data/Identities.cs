@@ -3,8 +3,8 @@
     using System;
     using System.Collections;
     using static Ctors;
-    using static Functions;
     using static Identities;
+    using static Core.Functions;
     using SCG = System.Collections.Generic;
 
     public static partial class Ctors

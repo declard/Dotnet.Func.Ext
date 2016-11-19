@@ -4,7 +4,7 @@ using System.Linq;
 namespace Dotnet.Func.Ext.Tests.Collections
 {
     [TestFixture]
-    public class Ranges
+    public class TRanges
     {
         private static int[] Inf(int v) => Enumerable.Repeat(v, 10).ToArray();
 

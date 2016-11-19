@@ -2,8 +2,8 @@
 {
     using System;
     using static Units;
-    using static Functions;
     using static Exceptions;
+    using static Core.Functions;
 
     public static partial class Ctors
     {

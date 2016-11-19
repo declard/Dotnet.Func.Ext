@@ -8,9 +8,9 @@
     using static Algebras.Structures;
     using static Ctors;
     using static Exceptions;
-    using static Functions;
     using static Optionals;
     using static Units;
+    using static Core.Functions;
 
     public static partial class Ctors
     {
@@ -146,7 +146,7 @@
         /// </summary>
         /// <param name="None">Default value source function</param>
         /// <returns>Contained value or, if empty, value from the source of default values</returns>
-        public static val GetValueOr<val>(this Opt<val> that, Func<Unit, val> None) => that.Case(None, Functions.App, Unit(), Snd);
+        public static val GetValueOr<val>(this Opt<val> that, Func<Unit, val> None) => that.Case(None, Core.Functions.App, Unit(), Snd);
 
         /// <summary>
         /// Try to extract contained value or use provided default value
@@ -194,10 +194,10 @@
         /// Opt{int} va = ..
         /// Opt{int} vb = ..
         /// Opt{int} vc = ..
-        /// var result = Some(tricky).App(va).App(vb).App(vc);
+        /// var result = Some(tricky).Ap(va).Ap(vb).Ap(vc);
         /// </code></example>
         /// <see cref="https://en.wikipedia.org/wiki/Applicative_functor"/>
-        public static Opt<outˈ> App<inA, outˈ>(this Opt<Func<inA, outˈ>> f, Opt<inA> a) =>
+        public static Opt<outˈ> Ap<inA, outˈ>(this Opt<Func<inA, outˈ>> f, Opt<inA> a) =>
             f.IsSome() && a.IsSome() ? Some(f.Some()(a.Some())) : None<outˈ>();
 
         /// <summary>

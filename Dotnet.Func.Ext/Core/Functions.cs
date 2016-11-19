@@ -1,13 +1,9 @@
-﻿using System;
-
-namespace Dotnet.Func.Ext
+﻿namespace Dotnet.Func.Ext.Core
 {
+    using System;
     using static Data.Units;
     using static Data.Ctors;
 
-    /// <summary>
-    /// Some useful generic high-order functions (mostly)
-    /// </summary>
     public static class Functions
     {
         /// <summary>
@@ -19,7 +15,7 @@ namespace Dotnet.Func.Ext
         /// Three functions composition
         /// </summary>
         public static Func<a, d> Compose<a, b, c, d>(Func<c, d> h, Func<b, c> g, Func<a, b> f) => v => h(g(f(v)));
-        
+
         /// <summary>
         /// Composition extension
         /// </summary>
@@ -55,17 +51,52 @@ namespace Dotnet.Func.Ext
         public static Func<in2, in1, outˈ> Flip<in1, in2, outˈ>(this Func<in1, in2, outˈ> f) => (a, b) => f(b, a);
 
         /// <summary>
+        /// Dual to `App`
+        /// </summary>
+        /// <remarks>
+        /// Useful for monadic evaluation chains for nullable types
+        /// </remarks>
+        /// <example><code>
+        /// decimal? d = TryToCalculateOrReturnNothing();
+        /// return d
+        ///     ?.FeedTo(TransformValueSomehow)
+        ///     ?.FeedTo(TransformTheResultInAnotherWay)
+        ///     ?.FeedTo(TransformTheResultOneMoreTime);
+        /// </code></example>
+        public static outˈ FeedTo<inˈ, outˈ>(this inˈ that, Func<inˈ, outˈ> f) => f(that);
+
+        /// <summary>
+        /// For nullable and constructable type replace null by a new object
+        /// </summary>
+        public static T NewIfNull<T>(this T that) where T : class, new() => that ?? new T();
+
+        /// <summary>
+        /// Finds function fixed point
+        /// </summary>
+        public static Func<inˈ, outˈ> Fix<inˈ, outˈ>(Func<Func<inˈ, outˈ>, Func<inˈ, outˈ>> f) => v => f(Fix(f))(v);
+
+        /// <summary>
+        /// Enforce squential calculation
+        /// </summary>
+        public static b Seq<a, b>(a _, b value) => value;
+
+
+        /// <summary>
         /// Currying for two args function
         /// </summary>
-        public static Func<in1, Func<in2, outˈ>> Curry<in1, in2, outˈ>(Func<in1, in2, outˈ> f) => a => b => f(a, b);
+        public static Func<in1, Func<in2, outˈ>> Curry<in1, in2, outˈ>(Func<in1, in2, outˈ> fˈ) => a => b => fˈ(a, b);
         /// <summary>
         /// Currying for three args function
         /// </summary>
-        public static Func<in1, Func<in2, Func<in3, outˈ>>> Curry<in1, in2, in3, outˈ>(Func<in1, in2, in3, outˈ> f) => a => b => c => f(a, b, c);
+        public static Func<in1, Func<in2, Func<in3, outˈ>>> Curry<in1, in2, in3, outˈ>(Func<in1, in2, in3, outˈ> fˈ) => a => b => c => fˈ(a, b, c);
         /// <summary>
         /// Currying for four args function
         /// </summary>
-        public static Func<in1, Func<in2, Func<in3, Func<in4, outˈ>>>> Curry<in1, in2, in3, in4, outˈ>(Func<in1, in2, in3, in4, outˈ> f) => a => b => c => d => f(a, b, c, d);
+        public static Func<in1, Func<in2, Func<in3, Func<in4, outˈ>>>> Curry<in1, in2, in3, in4, outˈ>(Func<in1, in2, in3, in4, outˈ> fˈ) => a => b => c => d => fˈ(a, b, c, d);
+        /// <summary>
+        /// Currying for five args function
+        /// </summary>
+        public static Func<in1, Func<in2, Func<in3, Func<in4, Func<in5, outˈ>>>>> Curry<in1, in2, in3, in4, in5, outˈ>(Func<in1, in2, in3, in4, in5, outˈ> fˈ) => a => b => c => d => e => fˈ(a, b, c, d, e);
 
 
         /// <summary>
@@ -93,44 +124,25 @@ namespace Dotnet.Func.Ext
         /// </summary>
         public static Func<Tuple<in1, in2, in3, in4, in5, in6>, outˈ> Tuplify<in1, in2, in3, in4, in5, in6, outˈ>(Func<in1, in2, in3, in4, in5, in6, outˈ> f) =>
             t => f(t.Item1, t.Item2, t.Item3, t.Item4, t.Item5, t.Item6);
-
+       
         /// <summary>
-        /// Disambiguation between `Func` and `Expression`
-        /// </summary>
-        public static Func<a, b> Func<a, b>(Func<a, b> fˈ) => fˈ;
-        /// <summary>
-        /// Disambiguation between `Func` and `Expression`
-        /// </summary>
-        public static Func<a, b, c> Func<a, b, c>(Func<a, b, c> fˈ) => fˈ;
-        /// <summary>
-        /// Disambiguation between `Func` and `Expression`
-        /// </summary>
-        public static Func<a, b, c, d> Func<a, b, c, d>(Func<a, b, c, d> fˈ) => fˈ;
-        /// <summary>
-        /// Disambiguation between `Func` and `Expression`
-        /// </summary>
-        public static Func<a, b, c, d, e> Func<a, b, c, d, e>(Func<a, b, c, d, e> fˈ) => fˈ;
-        /// <summary>
-        /// Disambiguation between `Func` and `Expression`
-        /// </summary>
-        public static Func<a, b, c, d, e, f> Func<a, b, c, d, e, f>(Func<a, b, c, d, e, f> fˈ) => fˈ;
-
-        /// <summary>
-        /// Disambiguation between `Func` and `Expression`
+        /// Type constraint for curried functions
         /// </summary>
         public static Func<a, Func<b, c>> Curried<a, b, c>(Func<a, Func<b, c>> fˈ) => fˈ;
         /// <summary>
-        /// Disambiguation between `Func` and `Expression`
+        /// Type constraint for curried functions
         /// </summary>
         public static Func<a, Func<b, Func<c, d>>> Curried<a, b, c, d>(Func<a, Func<b, Func<c, d>>> fˈ) => fˈ;
         /// <summary>
-        /// Disambiguation between `Func` and `Expression`
+        /// Type constraint for curried functions
         /// </summary>
         public static Func<a, Func<b, Func<c, Func<d, e>>>> Curried<a, b, c, d, e>(Func<a, Func<b, Func<c, Func<d, e>>>> fˈ) => fˈ;
         /// <summary>
-        /// Disambiguation between `Func` and `Expression`
+        /// Type constraint for curried functions
         /// </summary>
         public static Func<a, Func<b, Func<c, Func<d, Func<e, f>>>>> Curried<a, b, c, d, e, f>(Func<a, Func<b, Func<c, Func<d, Func<e, f>>>>> fˈ) => fˈ;
+
+        #region Isomorphisms
 
         /// <summary>
         /// Isomorphism between `a` and `Func{a}`
@@ -149,7 +161,7 @@ namespace Dotnet.Func.Ext
         /// Isomorphism between `Func{Unit, a}` and `Func{a}`
         /// </summary>
         public static Func<outˈ> IsoFunc<outˈ>(this Func<Unit, outˈ> that) => () => that(Unit());
-        
+
         /// <summary>
         /// Isomorphism between `Func{a, _}` and `Action{a}`
         /// </summary>
@@ -168,54 +180,6 @@ namespace Dotnet.Func.Ext
         /// </summary>
         public static Func<Unit, Unit> AsFunc(this Action that) => _ => { that(); return Unit(); };
 
-        /// <summary>
-        /// Contravariant functor over a function
-        /// </summary>
-        public static Func<inˈ, outˈ> CoMap<inˈ, inˈˈ, outˈ>(this Func<inˈˈ, outˈ> f, Func<inˈ, inˈˈ> g) => Compose(f, g);
-        /// <summary>
-        /// Contravariant functor over a two args function
-        /// </summary>
-        public static Func<inˈ, inˈ, outˈ> CoMap<inˈ, inˈˈ, outˈ>(this Func<inˈˈ, inˈˈ, outˈ> f, Func<inˈ, inˈˈ> g) =>
-            (x, y) => f(g(x), g(y));
-
-        /// <summary>
-        /// Covariant functor over a function
-        /// </summary>
-        public static Func<inˈ, outˈˈ> Map<inˈ, outˈ, outˈˈ>(this Func<inˈ, outˈ> f, Func<outˈ, outˈˈ> g) => Compose(g, f);
-        /// <summary>
-        /// Covariant functor over a two args function
-        /// </summary>
-        public static Func<inˈ, inˈ, outˈˈ> Map<inˈ, outˈ, outˈˈ>(this Func<inˈ, inˈ, outˈ> f, Func<outˈ, outˈˈ> g) =>
-            (x, y) => g(f(x, y));
-
-        /// <summary>
-        /// Dual to `App`
-        /// </summary>
-        /// <remarks>
-        /// Useful for monadic evaluation chains for nullable types
-        /// </remarks>
-        /// <example><code>
-        /// decimal? d = TryToCalculateOrReturnNothing();
-        /// return d
-        ///     ?.FeedTo(TransformValueSomehow)
-        ///     ?.FeedTo(TransformTheResultInAnotherWay)
-        ///     ?.FeedTo(TransformTheResultOneMoreTime);
-        /// </code></example>
-        public static outˈ FeedTo<inˈ, outˈ>(this inˈ that, Func<inˈ, outˈ> f) => f(that);
-        
-        /// <summary>
-        /// For nullable and constructable type replace null by a new object
-        /// </summary>
-        public static T NewIfNull<T>(this T that) where T : class, new() => that ?? new T();
-
-        /// <summary>
-        /// Finds function fixed point
-        /// </summary>
-        public static Func<inˈ, outˈ> Fix<inˈ, outˈ>(Func<Func<inˈ, outˈ>, Func<inˈ, outˈ>> f) => v => f(Fix(f))(v);
-
-        /// <summary>
-        /// Enforce squential calculation
-        /// </summary>
-        public static b Seq<a, b>(a _, b value) => value;
+        #endregion
     }
 }

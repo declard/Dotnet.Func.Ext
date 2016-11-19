@@ -9,9 +9,10 @@
     using static Data.Orders;
     using static Data.Tuples;
     using static Data.Units;
+    using static Data.Functions;
     using static Extensions;
-    using static Functions;
     using static Structures;
+    using static Core.Functions;
 
     [Resolvable]
     public class AInt32 : ROrder<int, Unit>, SRing<int, Unit>, SBounded<int, Unit>, SEnum<int>, SUnitInj<int, Unit>

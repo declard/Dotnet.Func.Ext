@@ -5,7 +5,7 @@
     using static Units;
     using static Ctors;
     using static Exceptions;
-    using static Functions;
+    using static Core.Functions;
     using static Algebras.Structures;
     using Algebras;
 

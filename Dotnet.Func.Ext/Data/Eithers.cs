@@ -8,10 +8,10 @@
     using static Ctors;
     using static Eithers;
     using static Exceptions;
-    using static Functions;
     using static Optionals;
     using static Units;
-    
+    using static Core.Functions;
+
     public static partial class Ctors
     {
         /// <summary>
@@ -286,12 +286,12 @@
         /// Lift a function to an applicative context for either
         /// </summary>
         public static Either<left, outˈ> Lift<left, inA, inB, outˈ>(this Func<inA, inB, outˈ> f, Either<left, inA> a, Either<left, inB> b) =>
-            Either<left>.Right(Curry(f)).App(a).App(b);
+            Either<left>.Right(Curry(f)).Ap(a).Ap(b);
 
         /// <summary>
         /// Applies a function inside an applicative context (see Applicative functors)
         /// </summary>
-        public static Either<left, rightˈ> App<left, right, rightˈ>(this Either<left, Func<right, rightˈ>> f, Either<left, right> a) =>
+        public static Either<left, rightˈ> Ap<left, right, rightˈ>(this Either<left, Func<right, rightˈ>> f, Either<left, right> a) =>
             f.BiMap(Unit(), (_, leftValue) => leftValue, a, (rightCtx, rightValue) => rightCtx.Map(rightValue)).Join();
 
         /// <summary>

@@ -6,7 +6,7 @@ namespace Dotnet.Func.Ext.Algebras
     using static Data.Ctors;
     using static Data.Orders;
     using static Data.Units;
-    using static Functions;
+    using static Core.Functions;
     using static Structures;
 
     public static class Extensions

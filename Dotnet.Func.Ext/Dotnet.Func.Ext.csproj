@@ -68,8 +68,10 @@
     <Compile Include="Collections\ListExtensions.cs" />
     <Compile Include="Collections\Ranges.cs" />
     <Compile Include="Collections\ReadOnlyCasts\Extensions.cs" />
+    <Compile Include="Core\Functions.cs" />
     <Compile Include="Data\Booleans.cs" />
     <Compile Include="Data\Continuations.cs" />
+    <Compile Include="Data\Functions.cs" />
     <Compile Include="Data\List.cs" />
     <Compile Include="Data\Eithers.cs" />
     <Compile Include="Data\Orders.cs" />
@@ -77,7 +79,6 @@
     <Compile Include="Data\Tuples.cs" />
     <Compile Include="Data\Units.cs" />
     <Compile Include="Core\Exceptions.cs" />
-    <Compile Include="Core\Functions.cs" />
     <Compile Include="Data\Identities.cs" />
     <Compile Include="Data\Optionals.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

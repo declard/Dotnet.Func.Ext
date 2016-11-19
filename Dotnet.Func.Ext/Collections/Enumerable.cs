@@ -11,7 +11,8 @@
     using static Data.Optionals;
     using static Data.Tuples;
     using static Data.Units;
-    using static Functions;
+    using static Data.Functions;
+    using static Core.Functions;
     using SCG = System.Collections.Generic;
 
     public static partial class Enumerable
