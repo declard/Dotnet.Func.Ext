@@ -1,10 +1,10 @@
-﻿namespace Dotnet.Func.Ext.Algebras
+﻿namespace Dotnet.Func.Ext.Algebraic
 {
     using Data;
     using System;
     using System.Collections.Generic;
     using static Data.Units;
-    using static Structures;
+    using static Signatures;
 
     public static class Comparers
     {

@@ -31,6 +31,8 @@
         /// <summary>
         /// An identity monad
         /// Contains a value. That's all it does.
+        /// 
+        /// data Identity val = Identity val
         /// </summary>
         /// <typeparam name="val">Contained type</typeparam>
         public struct Identity<val> : SCG.IEnumerable<val>

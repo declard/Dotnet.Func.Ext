@@ -1,10 +1,10 @@
-﻿namespace Dotnet.Func.Ext.Algebras
+﻿namespace Dotnet.Func.Ext.Algebraic
 {
     using System;
     using System.Collections.Concurrent;
     using System.Linq;
     using System.Reflection;
-    using static Structures;
+    using static Signatures;
 
     [AttributeUsage(AttributeTargets.Class)]
     public class ResolvableAttribute : Attribute { }

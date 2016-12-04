@@ -1,4 +1,4 @@
-﻿namespace Dotnet.Func.Ext.Algebras
+﻿namespace Dotnet.Func.Ext.Algebraic
 {
     // Phantom marker types for multiple inheritance dispatch
     public sealed class Additive<mark> { private Additive() { } }

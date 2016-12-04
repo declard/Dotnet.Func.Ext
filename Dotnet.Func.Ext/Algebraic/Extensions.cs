@@ -1,5 +1,5 @@
 ﻿
-namespace Dotnet.Func.Ext.Algebras
+namespace Dotnet.Func.Ext.Algebraic
 {
     using Data;
     using System;
@@ -7,7 +7,7 @@ namespace Dotnet.Func.Ext.Algebras
     using static Data.Orders;
     using static Data.Units;
     using static Core.Functions;
-    using static Structures;
+    using static Signatures;
 
     public static class Extensions
     {

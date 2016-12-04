@@ -1,4 +1,4 @@
-﻿namespace Dotnet.Func.Ext.Algebras
+﻿namespace Dotnet.Func.Ext.Algebraic
 {
     using System;
     using System.Collections.Generic;
@@ -8,7 +8,7 @@
     using static Data.Tuples;
     using static Data.Units;
 
-    public static class Structures
+    public static class Signatures
     {
         public interface IEither<out left, out right>
         {

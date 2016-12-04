@@ -1,6 +1,6 @@
 ﻿namespace Dotnet.Func.Ext.Collections
 {
-    using Algebras;
+    using Algebraic;
     using Data;
     using System;
     using System.Collections;

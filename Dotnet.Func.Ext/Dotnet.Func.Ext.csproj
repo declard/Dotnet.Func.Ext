@@ -56,11 +56,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Algebras\Algebras.cs" />
-    <Compile Include="Algebras\Comparers.cs" />
-    <Compile Include="Algebras\Extensions.cs" />
-    <Compile Include="Algebras\Markers.cs" />
-    <Compile Include="Algebras\Resolver.cs" />
+    <Compile Include="Algebraic\AlgStructures.cs" />
+    <Compile Include="Algebraic\Comparers.cs" />
+    <Compile Include="Algebraic\Extensions.cs" />
+    <Compile Include="Algebraic\Markers.cs" />
+    <Compile Include="Algebraic\Resolver.cs" />
     <Compile Include="Collections\Casts\Extensions.cs" />
     <Compile Include="Collections\DictionaryExtensions.cs" />
     <Compile Include="Collections\Enumerable.cs" />
@@ -82,7 +82,7 @@
     <Compile Include="Data\Identities.cs" />
     <Compile Include="Data\Optionals.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Algebras\Structures.cs" />
+    <Compile Include="Algebraic\Signatures.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

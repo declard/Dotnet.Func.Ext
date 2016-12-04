@@ -1,10 +1,10 @@
 ﻿namespace Dotnet.Func.Ext.Data
 {
-    using Algebras;
+    using Algebraic;
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using static Algebras.Structures;
+    using static Algebraic.Signatures;
     using static Ctors;
     using static Eithers;
     using static Exceptions;
@@ -67,6 +67,8 @@
         /// The type is not quite symmetric:
         /// 1. it is a monad by it's `right` parameter
         /// 2. by default it constructs as Left containing the default value for the `left` type (for compatibility with other eithers, e.g. Opt and List)
+        /// 
+        /// data Either left right = Left left | Right right
         /// </summary>
         public struct Either<left, right> : IEither<left, right>, IEnumerable<right>
         {

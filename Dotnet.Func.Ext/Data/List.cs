@@ -3,7 +3,7 @@
 namespace Dotnet.Func.Ext.Data
 {
     using System.Collections;
-    using static Algebras.Structures;
+    using static Algebraic.Signatures;
     using static Ctors;
     using static Exceptions;
     using static Lists;
@@ -11,7 +11,7 @@ namespace Dotnet.Func.Ext.Data
     using static Tuples;
     using static Units;
     using static Core.Functions;
-    using Algebras;
+    using Algebraic;
     using SCG = System.Collections.Generic;
 
     public static partial class Ctors
@@ -60,6 +60,8 @@ namespace Dotnet.Func.Ext.Data
         /// <summary>
         /// Immutable linked list
         /// Here and after compact notation is used: `Cons(1, Cons(2, Cons(3, Nil())))` is denoted as `[1,2,3]` or `1:2:3:[]`
+        /// 
+        /// data List val = Nil | Cons { head :: val, tail :: (List val) }
         /// </summary>
         /// <typeparam name="val">Element type</typeparam>
         public struct List<val> : IEither<Unit, Pair<val, List<val>>>, SCG.IEnumerable<val>
@@ -67,35 +69,28 @@ namespace Dotnet.Func.Ext.Data
             /// <summary>
             /// Container to support references between nodes
             /// </summary>
-            private class Next
+            private class Node
             {
-                public List<val> Tail;
+                public Cons Cons;
             }
 
             /// <summary>
-            /// Node is a value and a notnull reference to the next
+            /// Node is a value and a list
             /// </summary>
-            private struct Node
+            public struct Cons
             {
-                public val Value;
-                public Next Next;
+                public val Head;
+                public List<val> Tail;
             }
 
             /// <summary>
             /// List is a node or nothing
             /// </summary>
-            private Opt<Node> _node;
-
-            /// <summary>
-            /// Basic pattern matcher (closure-evading)
-            /// </summary>
-            public res Case<leftCtx, rightCtx, res>(leftCtx leftCtxˈ, Func<leftCtx, Unit, res> Left, rightCtx rightCtxˈ, Func<rightCtx, Pair<val, List<val>>, res> Right) =>
-                _node.Case(leftCtxˈ, Left, Pair(rightCtxˈ, Right), (rightPair, rightValue) => rightPair.Right()(rightPair.Left(), Pair(rightValue.Value, rightValue.Next.Tail)));
-
+            private Node _node;
+            
             /// <summary>
             /// Empty list ctor
             /// </summary>
-            /// <returns></returns>
             public static List<val> CreateNil() => new List<val>();
 
             /// <summary>
@@ -104,8 +99,14 @@ namespace Dotnet.Func.Ext.Data
             /// <param name="head">Element value</param>
             /// <param name="tail">List's tail</param>
             public static List<val> CreateCons(val head, List<val> tail) =>
-                new List<val> { _node = Some(new Node { Value = head, Next = new Next { Tail = tail } }) };
-            
+                new List<val> { _node = new Node { Cons = new Cons { Head = head, Tail = tail } } };
+
+            /// <summary>
+            /// Basic pattern matcher (closure-evading)
+            /// </summary>
+            public res Case<leftCtx, rightCtx, res>(leftCtx leftCtxˈ, Func<leftCtx, Unit, res> Left, rightCtx rightCtxˈ, Func<rightCtx, Pair<val, List<val>>, res> Right) =>
+                _node == null ? Left(leftCtxˈ, Unit()) : Right(rightCtxˈ, Pair(_node.Cons.Head, _node.Cons.Tail));
+
             public SCG.IEnumerator<val> GetEnumerator()
             {
                 var next = this;
@@ -117,7 +118,7 @@ namespace Dotnet.Func.Ext.Data
             }
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-            public override string ToString() => _node.IsNone() ? "Nil()" : $"Cons({_node.Some().Value}, {_node.Some().Next.Tail})";
+            public override string ToString() => _node == null ? "Nil()" : $"Cons({_node.Cons.Head}, {_node.Cons.Tail})";
         }
 
         public static class List
@@ -157,6 +158,11 @@ namespace Dotnet.Func.Ext.Data
         /// tail [] → ⊥
         /// </example>
         public static List<val> Tail<val>(this List<val> that) => that.Case(InvalidOperation<List<val>>, Dtors.Right);
+
+        /// <summary>
+        /// Try take cons
+        /// </summary>
+        public static Opt<Pair<val, List<val>>> TryCons<val>(this List<val> that) => that.Homo(AList<val>.Class, AOpt<Pair<val, List<val>>>.Class);
 
         /// <summary>
         /// Right fold (`f v (f v (f v acc))`)

@@ -71,9 +71,6 @@ namespace Dotnet.Func.Ext.Data
         /// <summary>
         /// Point operation as extension
         /// </summary>
-        /// <typeparam name="val"></typeparam>
-        /// <param name="value"></param>
-        /// <returns></returns>
         public static ConstFunc<outˈ> PureFunc<outˈ>(this outˈ value) => new ConstFunc<outˈ>(value);
 
         /// <summary>

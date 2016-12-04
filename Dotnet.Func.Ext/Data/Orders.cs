@@ -6,8 +6,8 @@
     using static Ctors;
     using static Exceptions;
     using static Core.Functions;
-    using static Algebras.Structures;
-    using Algebras;
+    using static Algebraic.Signatures;
+    using Algebraic;
 
     public static partial class Ctors
     {
@@ -79,6 +79,8 @@
     {
         /// <summary>
         /// Well-order: less than, equals to, greater than
+        /// 
+        /// data Ord = Lt | Eq | Gt
         /// </summary>
         public struct Ord
         {

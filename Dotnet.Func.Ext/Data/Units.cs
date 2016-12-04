@@ -15,6 +15,8 @@
         /// <summary>
         /// That's what `void` type should be: the type with the only singleton value
         /// The nice way to use it is to have `Func(Unit)` instead of `Action` in generic code
+        /// 
+        /// data Unit = Unit
         /// </summary>
         public struct Unit { }
     }

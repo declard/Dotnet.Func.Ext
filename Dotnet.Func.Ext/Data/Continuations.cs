@@ -19,6 +19,8 @@
     {
         /// <summary>
         /// Continuation, incapsulates a computation with a hole instead of `return`
+        /// 
+        /// data Cont r a = Cont ((a -> r) -> r)
         /// </summary>
         /// <typeparam name="r">Result type</typeparam>
         /// <typeparam name="a">Argument for a returning function</typeparam>

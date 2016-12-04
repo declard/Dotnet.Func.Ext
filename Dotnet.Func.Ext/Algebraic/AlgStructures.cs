@@ -1,4 +1,4 @@
-﻿namespace Dotnet.Func.Ext.Algebras
+﻿namespace Dotnet.Func.Ext.Algebraic
 {
     using Data;
     using System;
@@ -11,7 +11,7 @@
     using static Data.Units;
     using static Data.Functions;
     using static Extensions;
-    using static Structures;
+    using static Signatures;
     using static Core.Functions;
 
     [Resolvable]
@@ -258,6 +258,19 @@
             l.Case(r, Fst, r, (rˈ, lv) => Some(rˈ.Case(lv, Fst, lv, (lvˈ, rv) => _semi.BinOp(lvˈ, rv))));
 
         Opt<val> SNullOp<Opt<val>, mark>.NullOp() => None<val>();
+    }
+
+    public class AOptEq<val, mark> : REquality<Opt<val>, mark>
+    {
+        REquality<val, mark> _eq;
+
+        public AOptEq(REquality<val, mark> eq)
+        {
+            _eq = eq;
+        }
+
+        bool SBinOp<Opt<val>, Opt<val>, bool, Equative<mark>>.BinOp(Opt<val> l, Opt<val> r) =>
+            l.IsNone() == r.IsNone() && Optionals.Lift(_eq.Equal, l, r).GetValueOr(true);
     }
 
     [Resolvable]

@@ -1,7 +1,7 @@
 ﻿
 namespace Dotnet.Func.Ext.Collections
 {
-    using Algebras;
+    using Algebraic;
     using Data;
     using System.Collections.Generic;
     using static Data.Orders;

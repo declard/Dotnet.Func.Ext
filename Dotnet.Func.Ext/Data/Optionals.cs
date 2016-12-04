@@ -1,11 +1,11 @@
 ﻿namespace Dotnet.Func.Ext.Data
 {
-    using Algebras;
+    using Algebraic;
     using Collections;
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using static Algebras.Structures;
+    using static Algebraic.Signatures;
     using static Ctors;
     using static Exceptions;
     using static Optionals;
@@ -65,6 +65,8 @@
         /// Can be recursively contained unlike `Nullable{}`
         /// Defaults to None
         /// Could be viewed as an immutable list with as most one element
+        /// 
+        /// data Opt val = None | Some val
         /// </summary>
         /// <example>
         /// Safe integral division

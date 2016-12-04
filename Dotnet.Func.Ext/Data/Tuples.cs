@@ -1,9 +1,9 @@
 ﻿namespace Dotnet.Func.Ext.Data
 {
-    using Algebras;
+    using Algebraic;
     using System;
     using System.Collections.Generic;
-    using static Algebras.Structures;
+    using static Algebraic.Signatures;
     using static Ctors;
     using static Tuples;
     using static Units;
@@ -52,6 +52,8 @@
         /// <summary>
         /// Pair of values
         /// Is a functor by its right value
+        /// 
+        /// data Pair left right = Pair left right
         /// </summary>
         /// <typeparam name="left">Left value</typeparam>
         /// <typeparam name="right">Right value</typeparam>
