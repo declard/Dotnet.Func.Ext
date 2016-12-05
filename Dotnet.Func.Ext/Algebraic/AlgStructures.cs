@@ -297,7 +297,7 @@
             l.Append(r);
     }
 
-    public class AEqComparer<val> : IEqualityComparer<val>
+    public class AEqComparer<val> : IEqualityComparer<val>, REquality<val, Unit>
     {
         Func<val, val, bool> _eq;
         Func<val, int> _hash;
@@ -310,6 +310,8 @@
 
         public bool Equals(val x, val y) => _eq(x, y);
         public int GetHashCode(val obj) => _hash(obj);
+
+        bool SBinOp<val, val, bool, Equative<Unit>>.BinOp(val l, val r) => Equals(l, r);
     }
 
     public static class AEqComparer
