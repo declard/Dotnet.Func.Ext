@@ -10,19 +10,20 @@ namespace Dotnet.Func.Ext.Data
     using static Algebraic.Extensions;
     using Algebraic;
     using System.Collections.Generic;
-
+    using System.Collections;
+    using System.Linq;
     public class Trees
     {
-        public struct Map<k, v>
+        public struct TreeMap<k, v> : IEnumerable<KeyValuePair<k, v>>
         {
             private WBT<Pair<k, v>>.N _tree;
             private ROrder<k, Unit> _ord;
 
-            private static Map<k, v> New(ROrder<k, Unit> ord, WBT<Pair<k, v>>.N t) => new Map<k, v> { _ord = ord, _tree = t };
+            private static TreeMap<k, v> New(ROrder<k, Unit> ord, WBT<Pair<k, v>>.N t) => new TreeMap<k, v> { _ord = ord, _tree = t };
             
             private static WBT<Pair<k, v>>.N Alter(Func<k, Ord> p, k key, Func<Opt<v>, Opt<v>> f, WBT<Pair<k, v>>.N t) =>
                WBT<Pair<k, v>>.Tip(t)
-                    ? (f(Ctors.None<v>())).Case(_ => null, (v vv) => WBT<Pair<k, v>>.Singleton(Ctors.Pair(key, vv)))
+                    ? (f(Ctors.None<v>())).Case(_ => WBT<Pair<k, v>>.Tip(), (v vv) => WBT<Pair<k, v>>.Singleton(Ctors.Pair(key, vv)))
                     : (p(t.v.Left()).Case(
                         _ => WBT<Pair<k, v>>.Balance(t.v, Alter(p, key, f, t.l), t.r),
                         _ => f(Ctors.Some(t.v.Right())).Case(
@@ -30,33 +31,36 @@ namespace Dotnet.Func.Ext.Data
                             vv => WBT<Pair<k, v>>.Bin(t.s, Ctors.Pair(key, vv), t.l, t.r)),
                         _ => WBT<Pair<k, v>>.Balance(t.v, t.l, Alter(p, key, f, t.r))));
 
-            private static Func<k, Ord> MkComp(ROrder<k, Unit> ord, k key) =>
-                kk => (ord ?? AOrdComparer.Create(Ctors.Func<k, k, int>(Comparer<k>.Default.Compare).Map(Orders.ToOrd))).Compare(key, kk);
+            private static WBT<Pair<k, v>>.N Map(Func<k, v, v> f, WBT<Pair<k, v>>.N t) =>
+                WBT < Pair < k, v>>.Tip(t) ? t : WBT<Pair<k, v>>.Bin(t.s, Ctors.Pair(t.v.Left(), t.v.Case(f)), Map(f, t.l), Map(f, t.r));
 
-            public Map<k, v> Empty(ROrder<k, Unit> ord = null) => New(ord, null);
-            public Map<k, v> Singleton(k key, v value, ROrder<k, Unit> ord = null) => New(ord, WBT<Pair<k, v>>.Singleton(Ctors.Pair(key, value)));
-            public Opt<v> Lookup(k key) => WBT<Pair<k, v>>.Lookup(MkComp(_ord, key).CoMap<Pair<k, v>, k, Ord>(Dtors.Left), _tree).Map(kv => kv.Right());
-            public Map<k, v> Alter(k key, Func<Opt<v>, Opt<v>> f) => New(_ord, Alter(MkComp(_ord, key), key, f, _tree));
+            public TreeMap<k, v> Empty(ROrder<k, Unit> ord = null) => New(ord, null);
+            public TreeMap<k, v> Singleton(k key, v value, ROrder<k, Unit> ord = null) => New(ord, WBT<Pair<k, v>>.Singleton(Ctors.Pair(key, value)));
+            public Opt<v> Lookup(k key) => WBT<Pair<k, v>>.Lookup(WBT<k>.MkComp(_ord, key).CoMap<Pair<k, v>, k, Ord>(Dtors.Left), _tree).Map(kv => kv.Right());
+            public TreeMap<k, v> Alter(k key, Func<Opt<v>, Opt<v>> f) => New(_ord, Alter(WBT<k>.MkComp(_ord, key), key, f, _tree));
             public int Size() => WBT<Pair<k, v>>.Size(_tree);
+            public TreeMap<k, v> Map(Func<k, v, v> f) => New(_ord, Map(f, _tree));
+
+            public IEnumerator<KeyValuePair<k, v>> GetEnumerator() => _tree.Select(Tuples.ToKvp).GetEnumerator();
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         }
 
-        public struct Set<v>
+        public struct TreeSet<v> : IEnumerable<v>
         {
             private WBT<v>.N _tree;
             private ROrder<v, Unit> _ord;
-            private ROrder<v, Unit> Ord => _ord ?? (_ord = AOrdComparer.Create(Ctors.Func<v, v, int>(Comparer<v>.Default.Compare).Map(Orders.ToOrd)));
 
-            private static Set<v> New(ROrder<v, Unit> ord, WBT<v>.N t) => new Set<v> { _ord = ord, _tree = t };
+            private static TreeSet<v> New(ROrder<v, Unit> ord, WBT<v>.N t) => new TreeSet<v> { _ord = ord, _tree = t };
 
-            private static Func<v, Ord> MkComp(ROrder<v, Unit> ord, v value) =>
-                vv => (ord ?? AOrdComparer.Create(Ctors.Func<v, v, int>(Comparer<v>.Default.Compare).Map(Orders.ToOrd))).Compare(value, vv);
-
-            public Set<v> Empty(ROrder<v, Unit> ord = null) => New(ord, null);
-            public Set<v> Singleton(v value, ROrder<v, Unit> ord = null) => New(ord, WBT<v>.Singleton(value));
-            public bool Contains(v value) => WBT<v>.Lookup(MkComp(_ord, value), _tree).IsSome();
-            public Set<v> Insert(v value) => New(_ord, WBT<v>.Insert(MkComp(_ord, value), value, _tree));
-            public Set<v> Delete(v value) => New(_ord, WBT<v>.Delete(MkComp(_ord, value), _tree));
+            public TreeSet<v> Empty(ROrder<v, Unit> ord = null) => New(ord, null);
+            public TreeSet<v> Singleton(v value, ROrder<v, Unit> ord = null) => New(ord, WBT<v>.Singleton(value));
+            public bool Contains(v value) => WBT<v>.Lookup(WBT<v>.MkComp(_ord, value), _tree).IsSome();
+            public TreeSet<v> Insert(v value) => New(_ord, WBT<v>.Insert(WBT<v>.MkComp(_ord, value), value, _tree));
+            public TreeSet<v> Delete(v value) => New(_ord, WBT<v>.Delete(WBT<v>.MkComp(_ord, value), _tree));
             public int Size() => WBT<v>.Size(_tree);
+
+            public IEnumerator<v> GetEnumerator() => _tree.GetEnumerator();
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         }
 
         /// <remarks>
@@ -64,18 +68,31 @@ namespace Dotnet.Func.Ext.Data
         /// </remarks>
         private static class WBT<a>
         {
-            public class N
+            public class N : IEnumerable<a>
             {
                 public int s;
                 public a v;
                 public N l;
                 public N r;
+
+                public IEnumerator<a> GetEnumerator()
+                {
+                    yield return v;
+                    foreach (var v in l) yield return v;
+                    foreach (var v in r) yield return v;
+                }
+
+                IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
             }
 
             public static readonly int Delta = 3;
             public static readonly int Gamma = 2;
 
+            public static Func<a, Ord> MkComp(ROrder<a, Unit> ord, a value) =>
+                v => (ord ?? AOrdComparer.Create(Ctors.Func<a, a, int>(Comparer<a>.Default.Compare).Map(Orders.ToOrd))).Compare(value, v);
+
             public static bool Tip(N t) => t == null;
+            public static N Tip() => null;
             public static int Size(N t) => Tip(t) ? 0 : t.s;
             public static N Singleton(a v) => new N { s = 1, v = v };
             public static N Bin(a v, N l, N r) => Bin(Size(l) + Size(r) + 1, v, l, r);
