@@ -81,6 +81,7 @@
     <Compile Include="Core\Exceptions.cs" />
     <Compile Include="Data\Identities.cs" />
     <Compile Include="Data\Optionals.cs" />
+    <Compile Include="Data\Trees.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Algebraic\Signatures.cs" />
   </ItemGroup>

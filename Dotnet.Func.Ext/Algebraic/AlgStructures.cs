@@ -321,22 +321,38 @@
             new AEqComparer<val>(eq, v => v.GetHashCode());
     }
 
-    public class AOrdComparer<val> : IComparer<val>
+    public class AOrdComparer<val> : IComparer<val>, ROrder<val, Unit>
     {
-        Func<val, val, int> _ord;
+        Func<val, val, Ord> _ord;
 
-        public AOrdComparer(Func<val, val, int> ord)
+        public AOrdComparer(Func<val, val, Ord> ord)
         {
             _ord = ord;
         }
 
-        public int Compare(val x, val y) => _ord(x, y);
+        public int Compare(val x, val y) => _ord(x, y).ToInt();
+
+        val SBinOp<val, val, val, Supremum<Unit>>.BinOp(val l, val r) => SupByCompare(_ord, l, r);
+        val SBinOp<val, val, val, Infimum<Unit>>.BinOp(val l, val r) => InfByCompare(_ord, l, r);
+        bool SBinOp<val, val, bool, Equative<Unit>>.BinOp(val l, val r) => EqualByCompare(_ord, l, r);
     }
 
     public static class AOrdComparer
     {
-        public static AOrdComparer<val> Create<val>(Func<val, val, int> ord) =>
+        public static AOrdComparer<val> Create<val>(Func<val, val, Ord> ord) =>
             new AOrdComparer<val>(ord);
+    }
+
+    public class AOrderable<val> : ROrder<val, Unit>
+    {
+        private Func<val, val, Ord> _c;
+
+        public static ROrder<val, Unit> Create(Func<val, val, Ord> c) =>
+            new AOrderable<val> { _c = c };
+
+        val SBinOp<val, val, val, Supremum<Unit>>.BinOp(val l, val r) => SupByCompare(_c, l, r);
+        val SBinOp<val, val, val, Infimum<Unit>>.BinOp(val l, val r) => InfByCompare(_c, l, r);
+        bool SBinOp<val, val, bool, Equative<Unit>>.BinOp(val l, val r) => EqualByCompare(_c, l, r);
     }
 
     public static class DefaultAlgebras

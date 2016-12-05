@@ -15,10 +15,10 @@
             new AEqComparer<val>(algebra.Equal, algebra.GetHashCode);
 
         public static IComparer<val> Cmp<val>(Func<val, val, int> comparer) =>
-            new AOrdComparer<val>(comparer);
+            new AOrdComparer<val>((x, y) => comparer(x, y).ToOrd());
 
         public static IComparer<val> Cmp<val>(ROrder<val, Unit> order) =>
-            new AOrdComparer<val>((x, y) => order.Compare(x, y).ToInt());
+            new AOrdComparer<val>(order.Compare);
 
         public static IEqualityComparer<val> Map<val, key>(this IEqualityComparer<key> that, Func<val, key> f) =>
             Eq<val>((x, y) => that.Equals(f(x), f(y)), v => that.GetHashCode(f(v)));
