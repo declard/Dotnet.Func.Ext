@@ -105,6 +105,8 @@
             
             public IEnumerator<val> GetEnumerator() => (!_isSome ? System.Linq.Enumerable.Empty<val>() : _value.YieldOne()).GetEnumerator();
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+            public static implicit operator Opt<val>(val value) => Some(value);
         }
 
         public static class Opt
@@ -291,6 +293,30 @@
         /// <see cref="https://en.wikipedia.org/wiki/Monad_(functional_programming)#The_Maybe_monad"/>
         public static Opt<valˈ> Bind<val, valˈ>(this Opt<val> that, Func<val, Opt<valˈ>> f) =>
                 that.Map(f).Join();
+
+        /// <summary>
+        /// Distributive law for Opt(T) over Nullable(T)
+        /// </summary>
+        /// <rules>
+        /// None.Dist() → null
+        /// Some(null).Dist() → null
+        /// Some(Nullable(a)).Dist() → Nullable(Some(a))
+        /// </rules>
+        public static Opt<val>? Dist<val>(this Opt<val?> that) where val : struct =>
+            that.Case(_ => null, WrapToSome);
+
+        private static Opt<val>? WrapToSome<val>(val? v) where val : struct => v?.FeedTo(Some);
+
+        /// <summary>
+        /// Distributive law for Nullable(T) over Optional(T)
+        /// </summary>
+        /// <rules>
+        /// null.Dist() → None
+        /// Nullable(None).Dist() → None
+        /// Nullable(Some(a)).Dist() → Some(Nullable(a))
+        /// </rules>
+        public static Opt<val?> Dist<val>(this Opt<val>? that) where val : struct =>
+            that?.UnwrapStruct() ?? None<val?>();
 
         /// <summary>
         /// Linq map analogue

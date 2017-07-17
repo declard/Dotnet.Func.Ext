@@ -58,7 +58,7 @@ namespace Dotnet.Func.Ext.Tests.Data
             AssertEq(v.PureFunc().With<int>().Bind(f), f(v));
         }
 
-        // f >>= id = f
+        // f >>= pure = f
         [Test]
         public void MonadInnerId()
         {

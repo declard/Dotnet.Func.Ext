@@ -189,7 +189,7 @@
     }
 
     [Resolvable]
-    public class AEither<left, right> : SSumProj<Either<left, right>, left, right>, SSumInj<Either<left, right>, left, right>, SUnitInj<Either<left, right>, right>
+    public class AEither<left, right> : SSumProj<Either<left, right>, left, right>, SSumInj<Either<left, right>, left, right>, SUnitInj<Either<left, right>, right>, IEqualityComparer<Either<left, right>>
     {
         public static readonly AEither<left, right> Class = new AEither<left, right>();
 
@@ -202,6 +202,12 @@
         public AEither<right, left> Flip() => AEither<right, left>.Class;
 
         Either<left, right> SUnitInj<Either<left, right>, right>.Inj(right Value) => Either<left>.Right(Value);
+
+        bool IEqualityComparer<Either<left, right>>.Equals(Either<left, right> x, Either<left, right> y) =>
+            x.IsLeft() && y.IsLeft() && Equals(x.Left(), y.Left())
+         || x.IsRight() && y.IsRight() && Equals(x.Right(), y.Right());
+
+        int IEqualityComparer<Either<left, right>>.GetHashCode(Either<left, right> obj) => obj.GetHashCode();
     }
     
     [Resolvable]

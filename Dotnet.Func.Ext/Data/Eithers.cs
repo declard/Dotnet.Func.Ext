@@ -92,12 +92,16 @@
             /// Basic closure-evading pattern matcher
             /// </summary>
             public res Case<leftCtx, rightCtx, res>(leftCtx leftCtxˈ, Func<leftCtx, left, res> Left, rightCtx rightCtxˈ, Func<rightCtx, right, res> Right) =>
-                !_isRight ? Left(leftCtxˈ, this.Left()) : Right(rightCtxˈ, this.Right());
+                !_isRight ? Left(leftCtxˈ, _left) : Right(rightCtxˈ, _right);
 
             public override string ToString() => !_isRight ? $"Left({_left})" : $"Right({_right})";
 
             public IEnumerator<right> GetEnumerator() => this.TryGetRight().GetEnumerator();
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+            public static implicit operator Either<left, right>(left value) => CreateLeft(value);
+            public static implicit operator Either<left, right>(right value) => CreateRight(value);
+
         }
 
         public static class Either
