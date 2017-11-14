@@ -32,7 +32,7 @@ namespace Dotnet.Func.Ext.Data
                         _ => WBT<Pair<k, v>>.Balance(t.v, t.l, Alter(p, key, f, t.r))));
 
             private static WBT<Pair<k, v>>.N Map(Func<k, v, v> f, WBT<Pair<k, v>>.N t) =>
-                WBT < Pair < k, v>>.Tip(t) ? t : WBT<Pair<k, v>>.Bin(t.s, Ctors.Pair(t.v.Left(), t.v.Case(f)), Map(f, t.l), Map(f, t.r));
+                WBT<Pair<k, v>>.Tip(t) ? t : WBT<Pair<k, v>>.Bin(t.s, Ctors.Pair(t.v.Left(), t.v.Case(f)), Map(f, t.l), Map(f, t.r));
 
             public TreeMap<k, v> Empty(ROrder<k, Unit> ord = null) => New(ord, null);
             public TreeMap<k, v> Singleton(k key, v value, ROrder<k, Unit> ord = null) => New(ord, WBT<Pair<k, v>>.Singleton(Ctors.Pair(key, value)));

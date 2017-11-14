@@ -85,18 +85,22 @@
         /// Currying for two args function
         /// </summary>
         public static Func<in1, Func<in2, outˈ>> Curry<in1, in2, outˈ>(Func<in1, in2, outˈ> fˈ) => a => b => fˈ(a, b);
+        public static Func<in1, Func<in2, outˈ>> Curried<in1, in2, outˈ>(this Func<in1, in2, outˈ> fˈ) => a => b => fˈ(a, b);
         /// <summary>
         /// Currying for three args function
         /// </summary>
         public static Func<in1, Func<in2, Func<in3, outˈ>>> Curry<in1, in2, in3, outˈ>(Func<in1, in2, in3, outˈ> fˈ) => a => b => c => fˈ(a, b, c);
+        public static Func<in1, Func<in2, Func<in3, outˈ>>> Curried<in1, in2, in3, outˈ>(this Func<in1, in2, in3, outˈ> fˈ) => a => b => c => fˈ(a, b, c);
         /// <summary>
         /// Currying for four args function
         /// </summary>
         public static Func<in1, Func<in2, Func<in3, Func<in4, outˈ>>>> Curry<in1, in2, in3, in4, outˈ>(Func<in1, in2, in3, in4, outˈ> fˈ) => a => b => c => d => fˈ(a, b, c, d);
+        public static Func<in1, Func<in2, Func<in3, Func<in4, outˈ>>>> Curried<in1, in2, in3, in4, outˈ>(this Func<in1, in2, in3, in4, outˈ> fˈ) => a => b => c => d => fˈ(a, b, c, d);
         /// <summary>
         /// Currying for five args function
         /// </summary>
         public static Func<in1, Func<in2, Func<in3, Func<in4, Func<in5, outˈ>>>>> Curry<in1, in2, in3, in4, in5, outˈ>(Func<in1, in2, in3, in4, in5, outˈ> fˈ) => a => b => c => d => e => fˈ(a, b, c, d, e);
+        public static Func<in1, Func<in2, Func<in3, Func<in4, Func<in5, outˈ>>>>> Curried<in1, in2, in3, in4, in5, outˈ>(this Func<in1, in2, in3, in4, in5, outˈ> fˈ) => a => b => c => d => e => fˈ(a, b, c, d, e);
 
 
         /// <summary>

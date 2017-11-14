@@ -13,9 +13,8 @@
     using static Data.Units;
     using static Data.Functions;
     using static Core.Functions;
-    using SCG = System.Collections.Generic;
 
-    public static partial class Enumerable
+    public static partial class EnumerableExtensions
     {
         #region Basics
 
@@ -56,7 +55,7 @@
             {
                 while (true)
                 {
-                    var chunk = new SCG.List<val>(chunkSize);
+                    var chunk = new List<val>(chunkSize);
 
                     var indexInChunk = 0;
 
@@ -114,20 +113,20 @@
         /// interleave [1] [2,3] → [1,2,3]
         /// interleave [1,2,3] [4] → [1,4,2,3]
         /// </example>
-        public static IEnumerable<val> Interleave<val>(this IEnumerable<val> that, IEnumerable<val> yonder)
+        public static IEnumerable<val> Interleave<val>(this IEnumerable<val> that, IEnumerable<val> another)
         {
             var thatEn = that.GetEnumerator();
-            var yonderEn = yonder.GetEnumerator();
+            var anotherEn = another.GetEnumerator();
 
             while (true)
             {
                 if (thatEn.MoveNext())
                     yield return thatEn.Current;
 
-                if (!yonderEn.MoveNext())
+                if (!anotherEn.MoveNext())
                     break;
 
-                yield return yonderEn.Current;
+                yield return anotherEn.Current;
             }
 
             while (thatEn.MoveNext())
@@ -374,6 +373,38 @@
         public static Opt<val> TryGetFirst<val>(this IEnumerable<val> that, Func<val, bool> pred) =>
             that.Where(pred).TryGetFirst();
 
+        /// <summary>
+        /// Tries to get single value in a safe manner
+        /// </summary>
+        public static Opt<val> TryGetSingle<val>(this IEnumerable<val> that)
+        {
+            using (var e = that.GetEnumerator())
+            {
+                if (!e.MoveNext())
+                    return None<val>();
+
+                var result = e.Current;
+
+                if (e.MoveNext())
+                    return None<val>();
+
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Tries to find the only matching value in a safe manner
+        /// </summary>
+        public static Opt<val> TryGetSingle<val>(this IEnumerable<val> that, Func<val, bool> pred) =>
+            that.Where(pred).TryGetSingle();
+
+        // todo desc
+        public static IEnumerable<outˈ> Map<valCtx, val, outˈ>(this IEnumerable<val> that, valCtx ctx, Func<valCtx, val, outˈ> f)
+        {
+            foreach (var element in that)
+                yield return f(ctx, element);
+        }
+
         #endregion
 
         #region Enumerations and generators
@@ -403,25 +434,25 @@
 
         /// <summary>
         /// Unforgetful memoizer
+        /// Thread unsafe
         /// </summary>
         public class Memoizer<outˈ> : IEnumerable<outˈ>
         {
             IEnumerator<outˈ> source;
-            SCG.List<outˈ> memoized = new SCG.List<outˈ>();
+            List<outˈ> memoized = new List<outˈ>();
+            int enumerations = 0;
 
-            public Memoizer() { }
-            public Memoizer(IEnumerable<outˈ> source)
+            private Memoizer() { }
+
+            public static IEnumerable<outˈ> Fix(Func<IEnumerable<outˈ>, IEnumerable<outˈ>> f)
             {
-                SetSource(source);
+                var m = new Memoizer<outˈ>();
+                m.source = f(m).GetEnumerator();
+                return m;
             }
 
-            internal void SetSource(IEnumerable<outˈ> source)
-            {
-                this.source = source.GetEnumerator();
-            }
-
-            IEnumerator<outˈ> IEnumerable<outˈ>.GetEnumerator() { return new Enumerator(this); }
-            IEnumerator IEnumerable.GetEnumerator() { return new Enumerator(this); }
+            public IEnumerator<outˈ> GetEnumerator() => new Enumerator(this);
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
             class Enumerator : IEnumerator<outˈ>
             {
@@ -432,10 +463,11 @@
                 {
                     this.memoizer = memoizer;
                     this.position = -1;
+                    memoizer.enumerations++;
                 }
 
-                outˈ IEnumerator<outˈ>.Current { get { return memoizer.memoized[position]; } }
-                object IEnumerator.Current { get { return memoizer.memoized[position]; } }
+                public outˈ Current => memoizer.memoized[position];
+                object IEnumerator.Current => Current;
 
                 void IEnumerator.Reset() { position = -1; }
 
@@ -454,7 +486,12 @@
                     return true;
                 }
 
-                void IDisposable.Dispose() { }
+                void IDisposable.Dispose()
+                {
+                    var enumerations = --memoizer.enumerations;
+                    if (enumerations == 0)
+                        memoizer.source.Dispose();
+                }
             }
         }
 
@@ -473,21 +510,60 @@
         /// <summary>
         /// Make enumerable transformation function recursive (circuit its output to its input) through a memoizer
         /// </summary>
-        public static IEnumerable<outˈ> FixMemoized<outˈ>(Func<IEnumerable<outˈ>, IEnumerable<outˈ>> f)
-        {
-            var m = new Memoizer<outˈ>();
-            m.SetSource(f(m));
-            return m;
-        }
+        public static IEnumerable<outˈ> FixMemoized<outˈ>(Func<IEnumerable<outˈ>, IEnumerable<outˈ>> f) =>
+            Memoizer<outˈ>.Fix(f);
 
         #endregion
 
+        /// <summary>
+        /// Group enumerable into a dictionary
+        /// </summary>
+        /// <param name="that">Dictionary-like input</param>
+        /// <param name="keySelector">Provides a key to group by</param>
+        /// <param name="valueSelector">Takes a key of a group and all elements of the group and produces an output value</param>
+        /// <returns></returns>
+        public static Dictionary<keyˈ, valueˈ> GroupToDictionary<inˈ, keyˈ, valueˈ>(
+            this IEnumerable<inˈ> that,
+            Func<inˈ, keyˈ> keySelector,
+            Func<keyˈ, IEnumerable<inˈ>, valueˈ> valueSelector) =>
+            that.GroupBy(keySelector).ToDictionary(g => g.Key, g => valueSelector(g.Key, g));
+
+        /// <summary>
+        /// Standard ToDictionary analogue with merging function
+        /// </summary>
+        /// <example>toDictionary [(1, 1), (2, 2), (3, 3)] (λv.mod v 2) toString (λk l r.l ++ r) → [(1, "13") (0, "2")]</example>
+        public static Dictionary<keyˈ, valueˈ> ToDictionary<inˈ, keyˈ, valueˈ>(
+            this IEnumerable<inˈ> that,
+            Func<inˈ, keyˈ> keySelector,
+            Func<inˈ, valueˈ> valueSelector,
+            Func<keyˈ, valueˈ, valueˈ, valueˈ> valueMerge)
+        {
+            var count = (that as IReadOnlyCollection<inˈ>)?.Count ?? 0;
+
+            var result = new Dictionary<keyˈ, valueˈ>(count);
+
+            foreach (var e in that)
+            {
+                var key = keySelector(e);
+                var newValue = valueSelector(e);
+
+                var oldValue = result.TryGetValue(key);
+
+                if (oldValue.IsSome())
+                    result[key] = valueMerge(key, oldValue.Some(), newValue);
+                else
+                    result.Add(key, newValue);
+            }
+
+            return result;
+        }
+
         #region ToCollection
-        
+
         /// <summary>
         /// Enumerates into a list applying transformation for each element
         /// </summary>
-        public static SCG.List<outˈ> ToList<inˈ, outˈ>(this IEnumerable<inˈ> that, Func<inˈ, outˈ> f) => that?.Select(f).ToList();
+        public static List<outˈ> ToList<inˈ, outˈ>(this IEnumerable<inˈ> that, Func<inˈ, outˈ> f) => that?.Select(f).ToList();
 
         /// <summary>
         /// Enumerates into a hash set
@@ -533,7 +609,7 @@
         {
             // Get only right values indexed through the whole sequence
             var indexedInnerInput = input
-                .Select(ValueKeyPair)
+                .WithIndex()
                 .MapValues(Eithers.TryGetRight)
                 .CollectValuesSome()
                 .ToDictionary();
@@ -547,5 +623,47 @@
             // Replace rights from input by output
             return input.Select((inElement, i) => inElement.IsRight() ? indexedInnerOutput[i] : inElement.Map(_ => default(outˈ))).ToList();
         }
+
+        public static void CopyTo<val>(this IEnumerable<val> that, val[] array, int arrayIndex)
+        {
+            if (array == null)
+                throw new ArgumentNullException(nameof(array));
+
+            if (arrayIndex < 0 || arrayIndex > array.Length)
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex));
+            
+            var index = arrayIndex;
+            foreach(var e in that)
+            {
+                if (index >= array.Length)
+                    return;
+
+                array[index] = e;
+
+                index++;
+            }
+        }
+
+        public static int IndexOf<element>(this IEnumerable<element> that, element item, IEqualityComparer<element> comparer = null)
+        {
+            if (that == null)
+                throw new ArgumentNullException(nameof(that));
+
+            comparer = comparer ?? EqualityComparer<element>.Default;
+
+            var index = 0;
+            foreach (var e in that)
+            {
+                if (comparer.Equals(e, item))
+                    return index;
+
+                index++;
+            }
+
+            return -1;
+        }
+
+        public static IEnumerable<KeyValuePair<int, element>> WithIndex<element>(this IEnumerable<element> that) =>
+            that.Select(ValueKeyPair);
     }
 }

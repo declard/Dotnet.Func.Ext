@@ -51,7 +51,7 @@
         /// Basic closure-evading pattern matcher
         /// </summary>
         public static outˈ Case<falseCtx, trueCtx, outˈ>(this bool boolˈ, falseCtx falseCtxˈ, Func<falseCtx, Unit, outˈ> falseˈ, trueCtx trueCtxˈ, Func<trueCtx, Unit, outˈ> trueˈ) =>
-            boolˈ ? falseˈ(falseCtxˈ, Ctors.Unit()) : trueˈ(trueCtxˈ, Ctors.Unit());
+            boolˈ ? trueˈ(trueCtxˈ, Ctors.Unit()) : falseˈ(falseCtxˈ, Ctors.Unit());
 
         /// <summary>
         /// Boolean inversion

@@ -3,7 +3,6 @@
     using Algebraic;
     using Collections;
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using static Algebraic.Signatures;
     using static Ctors;
@@ -11,6 +10,7 @@
     using static Optionals;
     using static Units;
     using static Core.Functions;
+    using System.Linq;
 
     public static partial class Ctors
     {
@@ -76,7 +76,7 @@
         /// </example>
         /// <typeparam name="val">Type to hold. Any type is allowed, no exceptions</typeparam>
         /// <see cref="https://en.wikipedia.org/wiki/Option_type"/>
-        public struct Opt<val> : IEnumerable<val>, IEither<Unit, val>
+        public struct Opt<val> : IEither<Unit, val>
         {
             /// <summary>
             /// Stored value (if there is one)
@@ -102,9 +102,6 @@
                 !_isSome ? Left(leftCtxˈ, Unit()) : Right(rightCtxˈ, _value);
 
             public override string ToString() => !_isSome ? "None()" : $"Some({_value})";
-            
-            public IEnumerator<val> GetEnumerator() => (!_isSome ? System.Linq.Enumerable.Empty<val>() : _value.YieldOne()).GetEnumerator();
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
             public static implicit operator Opt<val>(val value) => Some(value);
         }
@@ -137,6 +134,9 @@
 
             public static implicit operator Opt<val>(NotNull<val> notNull) => notNull.Value;
         }
+
+        public static IEnumerable<val> AsEnumerable<val>(this Opt<val> that) =>
+            that.Case(_ => Enumerable.Empty<val>(), v => v.YieldOne());
 
         /// <summary>
         /// `NoNull` smart ctor
@@ -177,12 +177,17 @@
         /// </rules>
         /// <see cref="https://en.wikipedia.org/wiki/Functor"/>
         public static Opt<valˈ> Map<val, valˈ>(this Opt<val> that, Func<val, valˈ> f) =>
-            that.Case(Unit(), (_, _ˈ) => None<valˈ>(), f, (rightMap, rightValue) => Some(rightMap(rightValue)));
+            that.Map(f, (fˈ, v) => fˈ(v));
 
         /// <summary>
         /// Hoist a function into an optional computation context
         /// </summary>
         public static Func<Opt<a>, Opt<b>> Map<a, b>(Func<a, b> f) => v => v.Map(f);
+
+        public static Opt<valˈ> Map<valCtx, val, valˈ>(this Opt<val> that, valCtx ctx, Func<valCtx, val, valˈ> f) =>
+            that.Case(
+                Unit(), (_, _ˈ) => None<valˈ>(),
+                Pair(ctx, f), (rightMap, rightValue) => Some(rightMap.Right()(rightMap.Left(), rightValue)));
 
         /// <summary>
         /// Lift a function to optional applicative functor context

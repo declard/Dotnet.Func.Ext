@@ -9,72 +9,11 @@ namespace Dotnet.Func.Ext.Collections
     using static Data.Units;
     using static Exceptions;
     using Data;
+    using Dotnet.Func.Ext.Collections.Adapters;
+    using Dotnet.Func.Ext.Collections.Lazy;
 
     public static class DictionaryExtensions
     {
-        private class TransformedDictionary<key, valueIn, valueOut> : IReadOnlyDictionary<key, valueOut>
-        {
-            private readonly IReadOnlyDictionary<key, valueIn> _dict;
-            private readonly Func<key, valueIn, valueOut> _f;
-
-            public TransformedDictionary(IReadOnlyDictionary<key, valueIn> dict, Func<key, valueIn, valueOut> f)
-            {
-                _dict = dict;
-                _f = f;
-            }
-
-            public IEnumerator<KeyValuePair<key, valueOut>> GetEnumerator() => AsEnumerable.GetEnumerator();
-
-            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
-
-            public int Count => _dict.Count;
-
-            public bool ContainsKey(key key) => _dict.ContainsKey(key);
-
-            public bool TryGetValue(key key, out valueOut value)
-            {
-                valueIn stored;
-                if (_dict.TryGetValue(key, out stored))
-                {
-                    value = _f(key, stored);
-                    return true;
-                }
-
-                value = default(valueOut);
-                return false;
-            }
-
-            public valueOut this[key key] => _f(key, _dict[key]);
-
-            public IEnumerable<key> Keys => _dict.Keys;
-            public IEnumerable<valueOut> Values => AsEnumerable.GetValues();
-
-            private IEnumerable<KeyValuePair<key, valueOut>> AsEnumerable => _dict.Select(kvp => KeyValuePair(kvp.Key, _f(kvp.Key, kvp.Value)));
-        }
-
-        /// <summary>
-        /// Optimized ToDictionary: preallocates space
-        /// </summary>
-        public static Dictionary<key, value> ToDictionary<key, value>(this IReadOnlyCollection<KeyValuePair<key, value>> that)
-        {
-            if (that == null)
-                return null;
-
-            var result = new Dictionary<key, value>(that.Count);
-
-            foreach (var e in that)
-                try
-                {
-                    result.Add(e.Key, e.Value);
-                }
-                catch (ArgumentException ex)
-                {
-                    throw new ArgumentException($"Dictionary.Add({e.Key}, {e.Value}) fail: the key has already been associated with the value {result.Get(e.Key)}", ex);
-                }
-
-            return result;
-        }
-
         /// <summary>
         /// To be used instead of an indexer
         /// </summary>
@@ -116,6 +55,14 @@ namespace Dotnet.Func.Ext.Collections
             return dst.TryGetValue(k, out v) ? Some(v) : None<value>();
         }
 
+        // todo desc
+        public static IReadOnlySet<key> GetKeys<key, value>(this IReadOnlyDictionary<key, value> that) =>
+            new ReadOnlySetReadOnlyDictionaryAdapter<key, value>(that);
+
+        // todo desc
+        public static IReadOnlyCollection<value> GetValues<key, value>(this IReadOnlyDictionary<key, value> that) =>
+            new ReadOnlyCollectionEnumerableAdapter<value>(that.Values, that.Count);
+
         /// <summary>
         /// Dictionary version of MapKeys with merging function for collisions resolution
         /// </summary>
@@ -126,13 +73,28 @@ namespace Dotnet.Func.Ext.Collections
         /// Dictionary version of MapValues (with key-dependent transformation)
         /// </summary>
         public static IReadOnlyDictionary<key, valueOut> MapValues<key, valueIn, valueOut>(this IReadOnlyDictionary<key, valueIn> that, Func<key, valueIn, valueOut> f) =>
-            new TransformedDictionary<key, valueIn, valueOut>(that, f);
+            new ReadOnlyDictionaryProjected<key, valueIn, valueOut>(that, f);
 
         /// <summary>
         /// Dictionary version of MapValues
         /// </summary>
         public static IReadOnlyDictionary<key, valueOut> MapValues<key, valueIn, valueOut>(this IReadOnlyDictionary<key, valueIn> that, Func<valueIn, valueOut> f) =>
             that.MapValues((_, v) => f(v));
+
+        // todo desc
+        public static IReadOnlyDictionary<key, value> Filter<key, value>(this IReadOnlyDictionary<key, value> that, Func<key, value, bool> f) =>
+            new ReadOnlyDictionaryFiltered<key, value>(that, f);
+
+        // todo desc
+        public static IReadOnlyDictionary<key, value> FilterByKey<key, value>(this IReadOnlyDictionary<key, value> that, Func<key, bool> f) =>
+            that.Filter((k, _) => f(k));
+
+        // todo desc
+        public static IReadOnlyDictionary<key, value> FilterByValue<key, value>(this IReadOnlyDictionary<key, value> that, Func<value, bool> f) =>
+            that.Filter((_, v) => f(v));
+
+        public static IReadOnlyDictionary<key, value> CollectValuesSome<key, value>(this IReadOnlyDictionary<key, Opt<value>> that) =>
+            that.FilterByValue(Dtors.IsSome).MapValues(Dtors.Some);
 
         /// <summary>
         /// Analogue for Union, but by keys

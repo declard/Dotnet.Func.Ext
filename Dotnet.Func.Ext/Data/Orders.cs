@@ -162,8 +162,20 @@
         /// <summary>
         /// Check whether value is on the range (including bounding points)
         /// </summary>
-        public static bool IsOnBetween<v, a>(this v value, v lower, v upper, a alg) where a : ROrder<v, Unit> =>
+        public static bool IsOnClosedInterval<v, a>(this v value, v lower, v upper, a alg) where a : ROrder<v, Unit> =>
             alg.Compare(value, lower).IsNlt() && alg.Compare(value, upper).IsNgt();
+
+        /// <summary>
+        /// Check whether value is on the range (excluding bounding points)
+        /// </summary>
+        public static bool IsOnOpenInterval<v, a>(this v value, v lower, v upper, a alg) where a : ROrder<v, Unit> =>
+            alg.Compare(value, lower).IsGt() && alg.Compare(value, upper).IsLt();
+
+        /// <summary>
+        /// Check whether value is on the range (including lower, bug excluding upper point)
+        /// </summary>
+        public static bool IsOnSemiInterval<v, a>(this v value, v lower, v upper, a alg) where a : ROrder<v, Unit> =>
+            alg.Compare(value, lower).IsNlt() && alg.Compare(value, upper).IsLt();
 
         /// <summary>
         /// Create well-order from inequalities

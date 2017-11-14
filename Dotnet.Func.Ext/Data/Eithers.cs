@@ -70,7 +70,7 @@
         /// 
         /// data Either left right = Left left | Right right
         /// </summary>
-        public struct Either<left, right> : IEither<left, right>, IEnumerable<right>
+        public struct Either<left, right> : IEither<left, right>
         {
             private left _left;
             private right _right;
@@ -96,9 +96,6 @@
 
             public override string ToString() => !_isRight ? $"Left({_left})" : $"Right({_right})";
 
-            public IEnumerator<right> GetEnumerator() => this.TryGetRight().GetEnumerator();
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
             public static implicit operator Either<left, right>(left value) => CreateLeft(value);
             public static implicit operator Either<left, right>(right value) => CreateRight(value);
 
@@ -120,6 +117,9 @@
 
             public Either<left, right> With<left>() => Either.Pure<left, right>(_v);
         }
+
+        public static IEnumerable<right> AsEnumerable<left, right>(this Either<left, right> that) =>
+            that.TryGetRight().AsEnumerable();
 
         /// <summary>
         /// Point operation as an extension
@@ -292,7 +292,7 @@
         /// Lift a function to an applicative context for either
         /// </summary>
         public static Either<left, outˈ> Lift<left, inA, inB, outˈ>(this Func<inA, inB, outˈ> f, Either<left, inA> a, Either<left, inB> b) =>
-            Either<left>.Right(Curry(f)).Ap(a).Ap(b);
+            f.Curried().PureEither().With<left>().Ap(a).Ap(b);
 
         /// <summary>
         /// Applies a function inside an applicative context (see Applicative functors)

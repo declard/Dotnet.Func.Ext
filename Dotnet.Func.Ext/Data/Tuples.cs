@@ -172,6 +172,9 @@
 
         #endregion
 
+        public static outˈ Case<keyˈ, valueˈ, outˈ>(this KeyValuePair<keyˈ, valueˈ> that, Func<keyˈ, valueˈ, outˈ> f) =>
+            f(that.Key, that.Value);
+
         #region Isomorphisms
 
         /// <summary>

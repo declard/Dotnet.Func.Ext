@@ -1,5 +1,4 @@
-﻿
-namespace Dotnet.Func.Ext.Collections
+﻿namespace Dotnet.Func.Ext.Collections
 {
     using Data;
     using System;
@@ -14,13 +13,16 @@ namespace Dotnet.Func.Ext.Collections
         /// Apply a transformation to the keys of a dictionary-like enumerable
         /// </summary>
         public static IEnumerable<KeyValuePair<keyOut, value>> MapKeys<keyIn, value, keyOut>(this IEnumerable<KeyValuePair<keyIn, value>> that, Func<keyIn, keyOut> f) =>
-            that.Select(x => KeyValuePair(f(x.Key), x.Value));
+            that.Map(f, (fˈ, x) => KeyValuePair(fˈ(x.Key), x.Value));
 
         /// <summary>
         /// Apply a transformation to the values of a dictionary-like enumerable
         /// </summary>
         public static IEnumerable<KeyValuePair<key, valueOut>> MapValues<key, valueIn, valueOut>(this IEnumerable<KeyValuePair<key, valueIn>> that, Func<valueIn, valueOut> f) =>
-            that.Select(x => KeyValuePair(x.Key, f(x.Value)));
+            that.Map(f, (fˈ, x) => KeyValuePair(x.Key, fˈ(x.Value)));
+
+        public static IEnumerable<KeyValuePair<key, valueOut>> MapValues<key, valueIn, valueOut>(this IEnumerable<KeyValuePair<key, valueIn>> that, Func<key, valueIn, valueOut> f) =>
+            that.Map(f, (fˈ, x) => KeyValuePair(x.Key, fˈ(x.Key, x.Value)));
 
         /// <summary>
         /// Get keys of a dictionary-like enumerable
@@ -45,20 +47,7 @@ namespace Dotnet.Func.Ext.Collections
         /// </summary>
         public static Dictionary<key, value> ToDictionary<key, value>(this IEnumerable<KeyValuePair<key, value>> that) =>
              that?.ToDictionary(x => x.Key, x => x.Value);
-
-        /// <summary>
-        /// Group enumerable into a dictionary
-        /// </summary>
-        /// <param name="that">Dictionary-like input</param>
-        /// <param name="keySelector">Provides a key to group by</param>
-        /// <param name="valueSelector">Takes a key of a group and all elements of the group and produces an output value</param>
-        /// <returns></returns>
-        public static Dictionary<keyˈ, valueˈ> GroupToDictionary<inˈ, keyˈ, valueˈ>(
-            this IEnumerable<inˈ> that,
-            Func<inˈ, keyˈ> keySelector,
-            Func<keyˈ, IEnumerable<inˈ>, valueˈ> valueSelector) =>
-            that.GroupBy(keySelector).ToDictionary(g => g.Key, g => valueSelector(g.Key, g));
-
+        
         /// <summary>
         /// Extract contained values for all Opts in the dict-like values, skipping pairs with empty Opts
         /// </summary>
@@ -67,31 +56,24 @@ namespace Dotnet.Func.Ext.Collections
             that.Where(x => x.Value.IsSome()).MapValues(Optionals.Get);
 
         /// <summary>
-        /// Standard ToDictionary analogue with merging function
+        /// Optimized ToDictionary: preallocates space
         /// </summary>
-        /// <example>toDictionary [(1, 1), (2, 2), (3, 3)] (λv.mod v 2) toString (λk l r.l ++ r) → [(1, "13") (0, "2")]</example>
-        public static Dictionary<keyˈ, valueˈ> ToDictionary<inˈ, keyˈ, valueˈ>(
-            this IEnumerable<inˈ> that,
-            Func<inˈ, keyˈ> keySelector,
-            Func<inˈ, valueˈ> valueSelector,
-            Func<keyˈ, valueˈ, valueˈ, valueˈ> valueMerge)
+        public static Dictionary<key, value> ToDictionary<key, value>(this IReadOnlyCollection<KeyValuePair<key, value>> that)
         {
-            var count = (that as IReadOnlyCollection<inˈ>)?.Count ?? 0;
+            if (that == null)
+                return null;
 
-            var result = new Dictionary<keyˈ, valueˈ>(count);
+            var result = new Dictionary<key, value>(that.Count);
 
             foreach (var e in that)
-            {
-                var key = keySelector(e);
-                var newValue = valueSelector(e);
-
-                var oldValue = result.TryGetValue(key);
-
-                if (oldValue.IsSome())
-                    result[key] = valueMerge(key, oldValue.Some(), newValue);
-                else
-                    result.Add(key, newValue);
-            }
+                try
+                {
+                    result.Add(e.Key, e.Value);
+                }
+                catch (ArgumentException ex)
+                {
+                    throw new ArgumentException($"Dictionary.Add({e.Key}, {e.Value}) fail: the key has already been associated with the value {result.Get(e.Key)}", ex);
+                }
 
             return result;
         }

@@ -46,7 +46,7 @@
             /// </summary>
             public outˈ Case<valCtx, outˈ>(valCtx valCtxˈ, Func<valCtx, val, outˈ> f) => f(valCtxˈ, _value);
 
-            public SCG.IEnumerator<val> GetEnumerator() => Collections.Enumerable.YieldOne(_value).GetEnumerator();
+            public SCG.IEnumerator<val> GetEnumerator() => Collections.EnumerableExtensions.YieldOne(_value).GetEnumerator();
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
             public override string ToString() => $"Identity({_value})";
