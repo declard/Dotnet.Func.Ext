@@ -364,7 +364,7 @@
                 if (e.MoveNext())
                     return Some(e.Current);
 
-            return None<val>();
+            return None();
         }
 
         /// <summary>
@@ -381,12 +381,12 @@
             using (var e = that.GetEnumerator())
             {
                 if (!e.MoveNext())
-                    return None<val>();
+                    return None();
 
                 var result = e.Current;
 
                 if (e.MoveNext())
-                    return None<val>();
+                    return None();
 
                 return result;
             }

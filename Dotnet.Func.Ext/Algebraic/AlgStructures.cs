@@ -174,8 +174,8 @@
         Ord SBinOp<Ord, Ord, Ord, Infimum<Unit>>.BinOp(Ord l, Ord r) => SupByCompare(Ord.Compare, l, r);
         Ord SBinOp<Ord, Ord, Ord, Supremum<Unit>>.BinOp(Ord l, Ord r) => InfByCompare(Ord.Compare, l, r);
 
-        public Opt<Ord> Succ(Ord v) => v.Case(Some(Eq()), Some(Gt()), None<Ord>());
-        public Opt<Ord> Pred(Ord v) => v.Case(None<Ord>(), Some(Lt()), Some(Eq()));
+        public Opt<Ord> Succ(Ord v) => v.Case(Some(Eq()), Some(Gt()), None());
+        public Opt<Ord> Pred(Ord v) => v.Case(None(), Some(Lt()), Some(Eq()));
     }
 
     [Resolvable]
@@ -230,7 +230,7 @@
         public static readonly AOpt<val> Class = new AOpt<val>();
 
         public Opt<val> Inject<arg>(arg Arg, Either<Func<arg, Unit>, Func<arg, val>> Injector) =>
-            Injector.Case(Arg, (a, f) => None<val>(f(a)), Arg, (a, f) => Some(f(a)));
+            Injector.Case(Arg, (a, f) => None(f(a)), Arg, (a, f) => Some(f(a)));
 
         public res Project<res>(Opt<val> Value, Pair<Func<Unit, res>, Func<val, res>> Projector) =>
             Value.Case(Projector.Left(), Projector.Right());
@@ -243,7 +243,7 @@
         Opt<val> SBinOp<Opt<val>, Opt<val>, Opt<val>, mark>.BinOp(Opt<val> l, Opt<val> r) =>
             l.Map(Some).GetValueOr(r);
 
-        Opt<val> SNullOp<Opt<val>, mark>.NullOp() => None<val>();
+        Opt<val> SNullOp<Opt<val>, mark>.NullOp() => None();
     }
     
     public class AOptMonoidRight<val, mark> : AOpt<val>, SMonoid<Opt<val>, mark>
@@ -251,7 +251,7 @@
         Opt<val> SBinOp<Opt<val>, Opt<val>, Opt<val>, mark>.BinOp(Opt<val> l, Opt<val> r) =>
             r.Map(Some).GetValueOr(l);
 
-        Opt<val> SNullOp<Opt<val>, mark>.NullOp() => None<val>();
+        Opt<val> SNullOp<Opt<val>, mark>.NullOp() => None();
     }
 
     public class AOptMonoid<val, mark> : AOpt<val>, SMonoid<Opt<val>, mark>
@@ -263,7 +263,7 @@
         Opt<val> SBinOp<Opt<val>, Opt<val>, Opt<val>, mark>.BinOp(Opt<val> l, Opt<val> r) =>
             l.Case(r, Fst, r, (rˈ, lv) => Some(rˈ.Case(lv, Fst, lv, (lvˈ, rv) => _semi.BinOp(lvˈ, rv))));
 
-        Opt<val> SNullOp<Opt<val>, mark>.NullOp() => None<val>();
+        Opt<val> SNullOp<Opt<val>, mark>.NullOp() => None();
     }
 
     public class AOptEq<val, mark> : REquality<Opt<val>, mark>

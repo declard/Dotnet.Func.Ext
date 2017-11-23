@@ -43,6 +43,11 @@
     public static class Booleans
     {
         /// <summary>
+        /// Basic constant pattern matcher
+        /// </summary>
+        public static outˈ Case<outˈ>(this bool boolˈ, outˈ falseˈ, outˈ trueˈ) => boolˈ.Case(falseˈ, Fst, trueˈ, Fst);
+
+        /// <summary>
         /// Basic pattern matcher
         /// </summary>
         public static outˈ Case<outˈ>(this bool boolˈ, Func<Unit, outˈ> falseˈ, Func<Unit, outˈ> trueˈ) => boolˈ.Case(falseˈ, Fst, trueˈ, Fst)(Ctors.Unit());

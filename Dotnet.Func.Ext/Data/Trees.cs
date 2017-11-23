@@ -23,7 +23,7 @@ namespace Dotnet.Func.Ext.Data
             
             private static WBT<Pair<k, v>>.N Alter(Func<k, Ord> p, k key, Func<Opt<v>, Opt<v>> f, WBT<Pair<k, v>>.N t) =>
                WBT<Pair<k, v>>.Tip(t)
-                    ? (f(Ctors.None<v>())).Case(_ => WBT<Pair<k, v>>.Tip(), (v vv) => WBT<Pair<k, v>>.Singleton(Ctors.Pair(key, vv)))
+                    ? (f(Ctors.None())).Case(_ => WBT<Pair<k, v>>.Tip(), (v vv) => WBT<Pair<k, v>>.Singleton(Ctors.Pair(key, vv)))
                     : (p(t.v.Left()).Case(
                         _ => WBT<Pair<k, v>>.Balance(t.v, Alter(p, key, f, t.l), t.r),
                         _ => f(Ctors.Some(t.v.Right())).Case(
@@ -155,7 +155,7 @@ namespace Dotnet.Func.Ext.Data
 
             public static N Insert(Func<a, Ord> c, a v, N t) => Tip(t) ? Singleton(v) : c(t.v).Case(_ => BalanceR(t.v, Insert(c, v, t.l), t.r), _ => Bin(t.s, v, t.l, t.r), _ => BalanceL(t.v, t.l, Insert(c, v, t.r)));
             public static N Delete(Func<a, Ord> p, N t) => Tip(t) ? t : p(t.v).Case(_ => BalanceR(t.v, Delete(p, t.l), t.r), _ => Glue(t.l, t.r), _ => BalanceL(t.v, t.l, Delete(p, t.r)));
-            public static Opt<a> Lookup(Func<a, Ord> p, N t) => Tip(t) ? Ctors.None<a>() : p(t.v).Case(_ => Lookup(p, t.l), _ => Ctors.Some(t.v), _ => Lookup(p, t.r));
+            public static Opt<a> Lookup(Func<a, Ord> p, N t) => Tip(t) ? Ctors.None() : p(t.v).Case(_ => Lookup(p, t.l), _ => Ctors.Some(t.v), _ => Lookup(p, t.r));
         }
     }
 }

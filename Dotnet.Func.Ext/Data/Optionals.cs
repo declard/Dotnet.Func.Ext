@@ -21,7 +21,10 @@
         /// <summary>
         /// Empty opt injection
         /// </summary>
-        public static Opt<val> None<val>(Unit _) => None<val>();
+        public static Opt<val> None<val>(Unit _) => Opt<val>.CreateNone();
+
+        public static None None() => new None();
+        public static None None(Unit _) => new None();
 
         /// <summary>
         /// Non-empty opt injection
@@ -104,6 +107,7 @@
             public override string ToString() => !_isSome ? "None()" : $"Some({_value})";
 
             public static implicit operator Opt<val>(val value) => Some(value);
+            public static implicit operator Opt<val>(None _) => None<val>();
         }
 
         public static class Opt
@@ -118,6 +122,11 @@
         /// Point operation as an extension
         /// </summary>
         public static Opt<val> PureOpt<val>(this val that) => Opt.Pure(that);
+
+        /// <summary>
+        /// Unit of Opt to avoid explicit type declaration
+        /// </summary>
+        public struct None { }
         
         /// <summary>
         /// Guarantees no nulls for reference values
@@ -186,14 +195,14 @@
 
         public static Opt<valˈ> Map<valCtx, val, valˈ>(this Opt<val> that, valCtx ctx, Func<valCtx, val, valˈ> f) =>
             that.Case(
-                Unit(), (_, _ˈ) => None<valˈ>(),
+                Unit(), (_, _ˈ) => None(),
                 Pair(ctx, f), (rightMap, rightValue) => Some(rightMap.Right()(rightMap.Left(), rightValue)));
 
         /// <summary>
         /// Lift a function to optional applicative functor context
         /// </summary>
         public static Opt<outˈ> Lift<inA, inB, outˈ>(this Func<inA, inB, outˈ> f, Opt<inA> a, Opt<inB> b) =>
-            a.IsSome() && b.IsSome() ? Some(f(a.Some(), b.Some())) : None<outˈ>();
+            a.IsSome() && b.IsSome() ? Some(f(a.Some(), b.Some())) : None();
 
         /// <summary>
         /// Execute the function in optional context
@@ -207,7 +216,7 @@
         /// </code></example>
         /// <see cref="https://en.wikipedia.org/wiki/Applicative_functor"/>
         public static Opt<outˈ> Ap<inA, outˈ>(this Opt<Func<inA, outˈ>> f, Opt<inA> a) =>
-            f.IsSome() && a.IsSome() ? Some(f.Some()(a.Some())) : None<outˈ>();
+            f.IsSome() && a.IsSome() ? Some(f.Some()(a.Some())) : None();
 
         /// <summary>
         /// Extract contained structural value as Nullable{}
@@ -225,13 +234,13 @@
         /// Convert from Nullable to Opt (null maps to None)
         /// </summary>
         public static Opt<val> ToOpt<val>(this val? that) where val : struct =>
-            that == null ? None<val>() : Some(that.Value);
+            that == null ? None() : Some(that.Value);
 
         /// <summary>
         /// Inject reference into Opt (null maps to None)
         /// </summary>
         public static Opt<val> ToOpt<val>(this val that) where val : class =>
-            that == null ? None<val>() : Some(that);
+            that == null ? None() : Some(that);
 
         /// <summary>
         /// Try to cast type
@@ -244,21 +253,21 @@
         /// If-then expression analogue
         /// </summary>
         public static Opt<target> Then<target>(this bool condition, Func<Unit, target> then) =>
-            condition ? Some(then(Unit())) : None<target>();
+            condition ? Some(then(Unit())) : None();
         //condition.Homo(ABool.Class, AOpt<Unit>.Class).Map(then); // too cool to use here
 
         /// <summary>
         /// If-then expression analogue
         /// </summary>
         public static Opt<target> Then<target>(this bool condition, target then) =>
-            condition ? Some(then) : None<target>();
+            condition ? Some(then) : None();
 
         /// <summary>
         /// Ensure that contained value (if any) satisfies the predicate or else return None
         /// Enumerable.Where-like filter
         /// </summary>
         public static Opt<val> Filter<val>(this Opt<val> that, Func<val, bool> pred) =>
-            that.Map(pred).GetValueOr(false) ? that : None<val>();
+            that.Map(pred).GetValueOr(false) ? that : None();
 
         /// <summary>
         /// Monadic join: flatten the container

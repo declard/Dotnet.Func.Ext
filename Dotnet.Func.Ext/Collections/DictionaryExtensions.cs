@@ -48,11 +48,11 @@ namespace Dotnet.Func.Ext.Collections
         public static Opt<value> TryGetValue<key, value>(this IReadOnlyDictionary<key, value> dst, key k)
         {
             if (dst == null || k == null)
-                return None<value>();
+                return None();
 
             value v;
 
-            return dst.TryGetValue(k, out v) ? Some(v) : None<value>();
+            return dst.TryGetValue(k, out v) ? Some(v) : None();
         }
 
         // todo desc
