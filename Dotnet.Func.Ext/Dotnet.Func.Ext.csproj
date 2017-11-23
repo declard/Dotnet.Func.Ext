@@ -81,6 +81,7 @@
     <Compile Include="Collections\Lazy\LookupFiltered.cs" />
     <Compile Include="Collections\Lazy\LookupProjected.cs" />
     <Compile Include="Collections\Adapters\LookupReadOnlyDictionaryAdapter.cs" />
+    <Compile Include="Collections\OrderingRules.cs" />
     <Compile Include="Collections\Ranges.cs" />
     <Compile Include="Collections\Adapters\ReadOnlyCollectionEnumerableAdapter.cs" />
     <Compile Include="Collections\ReadOnlyDictionaryBase.cs" />
@@ -105,8 +106,10 @@
     <Compile Include="Data\Identities.cs" />
     <Compile Include="Data\Optionals.cs" />
     <Compile Include="Data\Trees.cs" />
+    <Compile Include="Hasher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Algebraic\Signatures.cs" />
+    <Compile Include="TypeInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
