@@ -4,40 +4,39 @@
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Linq.Expressions;
 
     public class OrderingRules<selectorKey, element> : IEnumerable
     {
         private abstract class Orderer
         {
             public abstract IOrderedEnumerable<element> Run(IOrderedEnumerable<element> that, bool isDesc);
-            public abstract IOrderedQueryable<element> Run(IOrderedQueryable<element> that, bool isDesc);
+            public abstract IOrderedEnumerable<element> Run(IEnumerable<element> that, bool isDesc);
         }
 
-        private class Orderer<F> : Orderer
+        private class Orderer<key> : Orderer
         {
-            public Expression<Func<element, F>> Selector { get; set; }
+            private readonly Func<element, key> _selector;
+
+            public Orderer(Func<element, key> selector) { _selector = selector; }
 
             public override IOrderedEnumerable<element> Run(IOrderedEnumerable<element> that, bool isDesc) =>
-                isDesc ? that.ThenByDescending(Selector.Compile()) : that.ThenBy(Selector.Compile());
+                isDesc ? that.ThenByDescending(_selector) : that.ThenBy(_selector);
 
-            public override IOrderedQueryable<element> Run(IOrderedQueryable<element> that, bool isDesc) =>
-                isDesc ? that.ThenByDescending(Selector) : that.ThenBy(Selector);
+            public override IOrderedEnumerable<element> Run(IEnumerable<element> that, bool isDesc) =>
+                isDesc ? that.OrderByDescending(_selector) : that.OrderBy(_selector);
         }
 
         private readonly Dictionary<selectorKey, Orderer> _orderers = new Dictionary<selectorKey, Orderer>();
 
-        public void Add<selectedValue>(selectorKey key, Expression<Func<element, selectedValue>> selector)
-        {
-            _orderers.Add(key, new Orderer<selectedValue> { Selector = selector });
-        }
+        public void Add<selectedValue>(selectorKey key, Func<element, selectedValue> selector) =>
+            _orderers.Add(key, new Orderer<selectedValue>(selector));
 
-        public IOrderedEnumerable<element> Run(IOrderedEnumerable<element> that, selectorKey ley, bool isDesc) =>
-            _orderers[ley].Run(that, isDesc);
-
-        public IOrderedQueryable<element> Run(IOrderedQueryable<element> that, selectorKey key, bool isDesc) =>
+        public IOrderedEnumerable<element> Run(IOrderedEnumerable<element> that, selectorKey key, bool isDesc) =>
             _orderers[key].Run(that, isDesc);
-        
+
+        public IOrderedEnumerable<element> Run(IEnumerable<element> that, selectorKey key, bool isDesc) =>
+            _orderers[key].Run(that, isDesc);
+
         IEnumerator IEnumerable.GetEnumerator() => throw new NotImplementedException();
     }
 }

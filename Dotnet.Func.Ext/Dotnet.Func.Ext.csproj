@@ -82,6 +82,7 @@
     <Compile Include="Collections\Lazy\LookupProjected.cs" />
     <Compile Include="Collections\Adapters\LookupReadOnlyDictionaryAdapter.cs" />
     <Compile Include="Collections\OrderingRules.cs" />
+    <Compile Include="Collections\QueryOrderingRules.cs" />
     <Compile Include="Collections\Ranges.cs" />
     <Compile Include="Collections\Adapters\ReadOnlyCollectionEnumerableAdapter.cs" />
     <Compile Include="Collections\ReadOnlyDictionaryBase.cs" />

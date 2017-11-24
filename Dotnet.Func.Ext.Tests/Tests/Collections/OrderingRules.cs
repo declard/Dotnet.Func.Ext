@@ -18,6 +18,7 @@
                 { Columns.Id, entity => entity.Id },
                 { Columns.Name, entity => entity.Name },
             };
+
             var entities = new[]
             {
                 new Entity { Id = 1, Name = "a" },
@@ -40,11 +41,12 @@
         [Test]
         public void OrderQueryableByTwoFields()
         {
-            var rules = new OrderingRules<Columns, Entity>
+            var rules = new QueryOrderingRules<Columns, Entity>
             {
                 { Columns.Id, entity => entity.Id },
                 { Columns.Name, entity => entity.Name },
             };
+
             var entities = new[]
             {
                 new Entity { Id = 1, Name = "a" },

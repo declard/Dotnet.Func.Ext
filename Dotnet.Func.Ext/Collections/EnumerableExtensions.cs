@@ -666,16 +666,28 @@
         public static IEnumerable<KeyValuePair<int, element>> WithIndex<element>(this IEnumerable<element> that) =>
             that.Select(ValueKeyPair);
 
-        public static IOrderedEnumerable<element> OrderBy<selectorKey, element>(this IEnumerable<element> that, OrderingRules<selectorKey, element> rules, selectorKey key, bool isDesc) =>
-            rules.Run(that.OrderBy(_ => 0), key, isDesc);
+        public static IOrderedEnumerable<element> OrderBy<selectorKey, element>(
+            this IEnumerable<element> that,
+            OrderingRules<selectorKey, element> rules,
+            selectorKey key,
+            bool isDesc) => rules.Run(that, key, isDesc);
 
-        public static IOrderedQueryable<element> OrderBy<selectorKey, element>(this IQueryable<element> that, OrderingRules<selectorKey, element> rules, selectorKey key, bool isDesc) =>
-            rules.Run(that.OrderBy(_ => 0), key, isDesc);
+        public static IOrderedQueryable<element> OrderBy<selectorKey, element>(
+            this IQueryable<element> that,
+            QueryOrderingRules<selectorKey, element> rules,
+            selectorKey key,
+            bool isDesc) => rules.Run(that, key, isDesc);
 
-        public static IOrderedEnumerable<element> ThenBy<selectorKey, element>(this IOrderedEnumerable<element> that, OrderingRules<selectorKey, element> rules, selectorKey key, bool isDesc) =>
-            rules.Run(that, key, isDesc);
+        public static IOrderedEnumerable<element> ThenBy<selectorKey, element>(
+            this IOrderedEnumerable<element> that,
+            OrderingRules<selectorKey, element> rules,
+            selectorKey key,
+            bool isDesc) => rules.Run(that, key, isDesc);
 
-        public static IOrderedQueryable<element> ThenBy<selectorKey, element>(this IOrderedQueryable<element> that, OrderingRules<selectorKey, element> rules, selectorKey key, bool isDesc) =>
-            rules.Run(that, key, isDesc);
+        public static IOrderedQueryable<element> ThenBy<selectorKey, element>(
+            this IOrderedQueryable<element> that,
+            QueryOrderingRules<selectorKey, element> rules,
+            selectorKey key,
+            bool isDesc) => rules.Run(that, key, isDesc);
     }
 }
