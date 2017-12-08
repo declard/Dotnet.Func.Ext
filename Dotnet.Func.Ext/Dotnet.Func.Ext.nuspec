@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Dotnet.Func.Ext</id>
+    <version>0.1.0-alpha</version>
+    <title>Dotnet.Func.Ext</title>
+    <authors>Denis Menshchikov</authors>
+    <owners>Denis Menshchikov</owners>
+    <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
+    <projectUrl>https://github.com/demensh/Dotnet.Func.Ext</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Functional and collection extensions, basic algebraic data types influenced by FP</description>
+    <copyright>Copyright 2017 Denis Menshchikov</copyright>
+    <tags>Functional FP Algebraic Optional Either Extensions Functor Monad</tags>
+  </metadata>
+</package>

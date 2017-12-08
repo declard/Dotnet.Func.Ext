@@ -7,3 +7,11 @@ script:
   - dotnet restore
   - dotnet build
   - dotnet test -c Release Dotnet.Func.Ext.Tests/Dotnet.Func.Ext.Tests.csproj
+#deploy:
+#  provider: script
+#  skip_cleanup: true
+#  script:
+#    - nuget pack Dotnet.Func.Ext/Dotnet.Func.Ext.nuspec -Symbols -Properties Configuration=Release -Verbosity detailed
+#    - nuget push Dotnet.Func.Ext.*.nupkg -Verbosity detailed -ApiKey $NugetApiKey -Source $NugetSource
+#  on:
+#    branch: master
