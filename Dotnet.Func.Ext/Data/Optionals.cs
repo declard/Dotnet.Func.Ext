@@ -277,36 +277,36 @@
         /// <param name="that">Container to be flatted</param>
         /// <returns>Container flattened by one level or empty container</returns>
         /// <rules>
-        /// None.Join() → None
-        /// Some(None).Join() → None
-        /// Some(Some(a)).Join() → Some(a)
+        /// None.Flatten() → None
+        /// Some(None).Flatten() → None
+        /// Some(Some(a)).Flatten() → Some(a)
         /// </rules>
         /// <see cref="https://en.wikipedia.org/wiki/Monad_(functional_programming)#The_Maybe_monad"/>
-        public static Opt<val> Join<val>(this Opt<Opt<val>> that) =>
+        public static Opt<val> Flatten<val>(this Opt<Opt<val>> that) =>
             that.Case(None<val>, Id);
 
         /// <summary>
         /// Reduce the level of optionality by one considering contained Nullable type
         /// </summary>
-        public static Opt<val> Join<val>(this Opt<val?> that) where val : struct => that.Bind(ToOpt);
+        public static Opt<val> Flatten<val>(this Opt<val?> that) where val : struct => that.FlatMap(ToOpt);
 
         /// <summary>
         /// Ensure that the value (if any) is not null or else return None
         /// </summary>
-        public static Opt<val> Join<val>(this Opt<val> that) where val : class => that.Bind(ToOpt);
+        public static Opt<val> Flatten<val>(this Opt<val> that) where val : class => that.FlatMap(ToOpt);
 
         /// <summary>
         /// Monadic bind: invoke the computation in optional context
         /// </summary>
         /// <rules>
-        /// None.Bind(_ => None) → None  { no side effects executed }
-        /// None.Bind(b => Some(f(b))) → None  { no side effects executed }
-        /// Some(a).Bind(_ => None) → None
-        /// Some(a).Bind(b => Some(f(b))) → Some(f(a))
+        /// None.FlatMap(_ => None) → None  { no side effects executed }
+        /// None.FlatMap(b => Some(f(b))) → None  { no side effects executed }
+        /// Some(a).FlatMap(_ => None) → None
+        /// Some(a).FlatMap(b => Some(f(b))) → Some(f(a))
         /// </rules>
         /// <see cref="https://en.wikipedia.org/wiki/Monad_(functional_programming)#The_Maybe_monad"/>
-        public static Opt<valˈ> Bind<val, valˈ>(this Opt<val> that, Func<val, Opt<valˈ>> f) =>
-                that.Map(f).Join();
+        public static Opt<valˈ> FlatMap<val, valˈ>(this Opt<val> that, Func<val, Opt<valˈ>> f) =>
+                that.Map(f).Flatten();
 
         /// <summary>
         /// Distributive law for Opt(T) over Nullable(T)
@@ -339,7 +339,7 @@
         /// <summary>
         /// Linq bind analogue
         /// </summary>
-        public static Opt<outˈˈ> SelectMany<inˈ, outˈ, outˈˈ>(this Opt<inˈ> that, Func<inˈ, Opt<outˈ>> f, Func<inˈ, outˈ, outˈˈ> s) => s.Lift(that, that.Bind(f));
+        public static Opt<outˈˈ> SelectMany<inˈ, outˈ, outˈˈ>(this Opt<inˈ> that, Func<inˈ, Opt<outˈ>> f, Func<inˈ, outˈ, outˈˈ> s) => s.Lift(that, that.FlatMap(f));
         /// <summary>
         /// Linq filter analogue
         /// </summary>

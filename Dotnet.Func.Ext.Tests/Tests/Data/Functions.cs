@@ -55,7 +55,7 @@ namespace Dotnet.Func.Ext.Tests.Data
         {
             var f = Func<int, int>(x => x + 3).Map(Functions.Func.Pure<int, int>);
             var v = 1;
-            AssertEq(v.PureFunc().With<int>().Bind(f), f(v));
+            AssertEq(v.PureFunc().With<int>().FlatMap(f), f(v));
         }
 
         // f >>= pure = f
@@ -63,7 +63,7 @@ namespace Dotnet.Func.Ext.Tests.Data
         public void MonadInnerId()
         {
             var f = Func<int, int>(x => x + 1);
-            AssertEq(f.Bind(Functions.Func.Pure<int, int>), f);
+            AssertEq(f.FlatMap(Functions.Func.Pure<int, int>), f);
         }
 
         // f >>= h >>= g = f >>= \x -> h x >>= g
@@ -73,7 +73,7 @@ namespace Dotnet.Func.Ext.Tests.Data
             var f = Func<int, int>(x => x + 1);
             var g = Func<int, int>(x => x + 3).Map(Functions.Func.Pure<int, int>);
             var h = Func<int, int>(x => x * 3).Map(Functions.Func.Pure<int, int>);
-            AssertEq(f.Bind(h).Bind(g), f.Bind(x => h(x).Bind(g)));
+            AssertEq(f.FlatMap(h).FlatMap(g), f.FlatMap(x => h(x).FlatMap(g)));
         }
 
         // pure id <*> v = v
@@ -133,10 +133,10 @@ namespace Dotnet.Func.Ext.Tests.Data
         }
 
         [Test]
-        public void Join()
+        public void Flatten()
         {
             var f = Curried<int, int, string>(x => y => $"{x} {y}");
-            var r = f.Join()(3);
+            var r = f.Flatten()(3);
             Assert.AreEqual("3 3", r);
         }
 

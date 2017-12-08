@@ -96,12 +96,12 @@ namespace Dotnet.Func.Ext.Data
         /// <summary>
         /// Monadic `join` operation
         /// </summary>
-        public static Func<inˈ, outˈ> Join<inˈ, outˈ>(this Func<inˈ, Func<inˈ, outˈ>> that) => v => that(v)(v);
+        public static Func<inˈ, outˈ> Flatten<inˈ, outˈ>(this Func<inˈ, Func<inˈ, outˈ>> that) => v => that(v)(v);
 
         /// <summary>
         /// Monadic `bind` operation
         /// </summary>
-        public static Func<inˈ, outˈˈ> Bind<inˈ, outˈ, outˈˈ>(this Func<inˈ, outˈ> that, Func<outˈ, Func<inˈ, outˈˈ>> f) => that.Map(f).Join();
+        public static Func<inˈ, outˈˈ> FlatMap<inˈ, outˈ, outˈˈ>(this Func<inˈ, outˈ> that, Func<outˈ, Func<inˈ, outˈˈ>> f) => that.Map(f).Flatten();
 
         /// <summary>
         /// Execute the function in function context (kinda `reader monad` but an app. functor)
@@ -110,7 +110,7 @@ namespace Dotnet.Func.Ext.Data
         
         public static Func<inˈ, outˈˈ> Select<inˈ, outˈ, outˈˈ>(this Func<inˈ, outˈ> that, Func<outˈ, outˈˈ> f) => that.Map(f);
         public static Func<inˈ, outˈˈˈ> SelectMany<inˈ, outˈ, outˈˈ, outˈˈˈ>(this Func<inˈ, outˈ> that, Func<outˈ, Func<inˈ, outˈˈ>> f, Func<outˈ, outˈˈ, outˈˈˈ> s) =>
-            that.Bind(v => f(v).Map(vv => s(v, vv)));
+            that.FlatMap(v => f(v).Map(vv => s(v, vv)));
 
         #endregion
 
@@ -140,16 +140,16 @@ namespace Dotnet.Func.Ext.Data
         /// <summary>
         /// Collapse nested lazy
         /// </summary>
-        public static Lazy<a> Join<a>(this Lazy<Lazy<a>> that) => Lazy(_ => that.Value.Value);
+        public static Lazy<a> Flatten<a>(this Lazy<Lazy<a>> that) => Lazy(_ => that.Value.Value);
 
         /// <summary>
         /// Monadic `bind` operation
         /// </summary>
-        public static Lazy<b> Bind<a, b>(this Lazy<a> that, Func<a, Lazy<b>> f) => that.Map(f).Join();
+        public static Lazy<b> FlatMap<a, b>(this Lazy<a> that, Func<a, Lazy<b>> f) => that.Map(f).Flatten();
 
         public static Lazy<outˈ> Select<val, outˈ>(this Lazy<val> that, Func<val, outˈ> f) => that.Map(f);
         public static Lazy<outˈ> SelectMany<val, valˈ, outˈ>(this Lazy<val> that, Func<val, Lazy<valˈ>> f, Func<val, valˈ, outˈ> s) =>
-            that.Bind(v => f(v).Map(vv => s(v, vv)));
+            that.FlatMap(v => f(v).Map(vv => s(v, vv)));
 
 
         #endregion

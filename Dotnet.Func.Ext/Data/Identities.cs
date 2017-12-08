@@ -78,12 +78,12 @@
         /// <summary>
         /// Monadic join
         /// </summary>
-        public static Identity<valˈ> Join<valˈ>(this Identity<Identity<valˈ>> v) => v.Identity();
+        public static Identity<valˈ> Flatten<valˈ>(this Identity<Identity<valˈ>> v) => v.Identity();
 
         /// <summary>
         /// Monadic bind
         /// </summary>
-        public static Identity<outˈ> Bind<valˈ, outˈ>(this Identity<valˈ> v, Func<valˈ, Identity<outˈ>> f) => v.Map(f).Join();
+        public static Identity<outˈ> FlatMap<valˈ, outˈ>(this Identity<valˈ> v, Func<valˈ, Identity<outˈ>> f) => v.Map(f).Flatten();
 
         /// <summary>
         /// Applicative functor lift
@@ -99,6 +99,6 @@
         /// Linq bind analogue
         /// </summary>
         public static Identity<outˈ> SelectMany<val, valˈ, outˈ>(Identity<val> that, Func<val, Identity<valˈ>> f, Func<val, valˈ, outˈ> g) =>
-            g.Lift(that, that.Bind(f));
+            g.Lift(that, that.FlatMap(f));
     }
 }

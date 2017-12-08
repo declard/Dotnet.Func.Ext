@@ -266,21 +266,21 @@
         /// <param name="that">Container to be flatted</param>
         /// <returns>Contained container or contained left</returns>
         /// <rules>
-        /// Left(a).Join() → Left(a)
-        /// Right(Left(a)).Join() → Left(a)
-        /// Right(Left(a)).Join() → Right(a)
+        /// Left(a).Flatten() → Left(a)
+        /// Right(Left(a)).Flatten() → Left(a)
+        /// Right(Left(a)).Flatten() → Right(a)
         /// </rules>
-        public static Either<left, right> Join<left, right>(this Either<left, Either<left, right>> that) =>
+        public static Either<left, right> Flatten<left, right>(this Either<left, Either<left, right>> that) =>
             that.BiMap(Id, GetRight);
 
         /// <rules>
-        /// Left(a).Bind(b => Left(f(b))) → Left(a)  { no side effects executed }
-        /// Left(a).Bind(b => Right(f(b))) → Left(a)  { no side effects executed }
-        /// Right(a).Bind(b => Left(f(b))) → Left(f(a))
-        /// Right(a).Bind(b => Right(f(b))) → Right(f(a))
+        /// Left(a).FlatMap(b => Left(f(b))) → Left(a)  { no side effects executed }
+        /// Left(a).FlatMap(b => Right(f(b))) → Left(a)  { no side effects executed }
+        /// Right(a).FlatMap(b => Left(f(b))) → Left(f(a))
+        /// Right(a).FlatMap(b => Right(f(b))) → Right(f(a))
         /// </rules>
-        public static Either<left, rightˈ> Bind<left, right, rightˈ>(this Either<left, right> that, Func<right, Either<left, rightˈ>> f) =>
-            that.Map(f).Join();
+        public static Either<left, rightˈ> FlatMap<left, right, rightˈ>(this Either<left, right> that, Func<right, Either<left, rightˈ>> f) =>
+            that.Map(f).Flatten();
         
         /// <summary>
         /// Mirrors left and right
@@ -298,14 +298,14 @@
         /// Applies a function inside an applicative context (see Applicative functors)
         /// </summary>
         public static Either<left, rightˈ> Ap<left, right, rightˈ>(this Either<left, Func<right, rightˈ>> f, Either<left, right> a) =>
-            f.BiMap(Unit(), (_, leftValue) => leftValue, a, (rightCtx, rightValue) => rightCtx.Map(rightValue)).Join();
+            f.BiMap(Unit(), (_, leftValue) => leftValue, a, (rightCtx, rightValue) => rightCtx.Map(rightValue)).Flatten();
 
         /// <summary>
         /// Ensure that contained value (if any) satisfies the predicate or else return Left
         /// Enumerable.Where-like filter
         /// </summary>
-        public static Either<left, right> Filter<left, right>(this Either<left, right> that, Func<right, bool> p, Resolver.Resolvable<SNeutral<left, Additive<Unit>>> neutral = null) =>
-            that.Map(p).GetRightOr(false) ? that : that.Alg().InjectLeft(neutral.Value().Zero());
+        public static Either<left, right> Filter<left, right>(this Either<left, right> that, Func<right, bool> p, SNeutral<left, Unit> neutral = null) => // todo resolve neutral
+            that.Map(p).GetRightOr(false) ? that : that.Alg().InjectLeft((neutral ?? AObject<left>.Class).NullOp());
 
         /// <summary>
         /// Linq map analogue
@@ -315,7 +315,7 @@
         /// Linq bind analogue
         /// </summary>
         public static Either<left, rightˈˈ> SelectMany<left, right, rightˈ, rightˈˈ>(this Either<left, right> that, Func<right, Either<left, rightˈ>> f, Func<right, rightˈ, rightˈˈ> s) =>
-            s.Lift(that, that.Bind(f));
+            s.Lift(that, that.FlatMap(f));
         /// <summary>
         /// Linq filter analogue
         /// </summary>

@@ -204,7 +204,7 @@ namespace Dotnet.Func.Ext.Data
         /// Monadic join (list flattening)
         /// </summary>
         /// <example>join [[1,2],[3,4,5]] → [1,2,3,4,5]</example>
-        public static List<val> Join<val>(this List<List<val>> that) =>
+        public static List<val> Flatten<val>(this List<List<val>> that) =>
             that.Foldr(Nil<val>(), Append);
 
         /// <summary>

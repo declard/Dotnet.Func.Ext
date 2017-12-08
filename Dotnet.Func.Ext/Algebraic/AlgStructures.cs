@@ -14,7 +14,7 @@
     using static Signatures;
     using static Core.Functions;
 
-    [Resolvable]
+    
     public class AInt32 : ROrder<int, Unit>, SRing<int, Unit>, SBounded<int, Unit>, SEnum<int>, SUnitInj<int, Unit>
     {
         public static readonly AInt32 Class = new AInt32();
@@ -44,7 +44,7 @@
         static Ord Compare(int l, int r) => l.CompareTo(r).ToOrd();
     }
 
-    [Resolvable]
+    
     public class AChar : ROrder<char, Unit>, SBounded<char, Unit>, SGroup<char, Additive<Unit>>, SNeutral<char, Multiplicative<Unit>>, SEnum<char>, SUnitInj<char, Unit>
     {
         public static readonly AChar Class = new AChar();
@@ -70,7 +70,7 @@
         static Ord Compare(char l, char r) => l.CompareTo(r).ToOrd();
     }
 
-    [Resolvable]
+    
     public class ARatio : SField<Ratio, Unit>, ROrder<Ratio, Unit>, SUnitInj<Ratio, Unit>
     {
         public static readonly ARatio Class = new ARatio();
@@ -92,7 +92,7 @@
         static Ord Compare(Ratio l, Ratio r) => AInt32.Class.Compare(l.Numerator * r.Denominator, r.Numerator * l.Denominator);
     }
 
-    [Resolvable]
+    
     public class ADouble: SField<double, Unit>, ROrder<double, Unit>, SUnitInj<double, Unit>
     {
         public static readonly ADouble Class = new ADouble();
@@ -114,7 +114,7 @@
         static Ord Compare(double l, double r) => l.CompareTo(r).ToOrd();
     }
 
-    [Resolvable]
+    
     public class ABool : ROrder<bool, Unit>, SBounded<bool, Unit>, SSumProj<bool, Unit, Unit>, SSumInj<bool, Unit, Unit>, SEnum<bool>
     {
         public static readonly ABool Class = new ABool();
@@ -139,7 +139,7 @@
         static Ord Compare(bool l, bool r) => l.CompareTo(r).ToOrd();
     }
 
-    [Resolvable]
+    
     public class AString : REquality<string, Unit>, SMonoid<string, Additive<Unit>>, SList<string, char>, SUnitInj<string, char>
     {
         public static readonly AString Class = new AString();
@@ -162,7 +162,7 @@
         string SUnitInj<string, char>.Inj(char Value) => Value.ToString();
     }
 
-    [Resolvable]
+    
     public class AOrd : ROrder<Ord, Unit>, SBounded<Ord, Unit>, SEnum<Ord>
     {
         public static readonly AOrd Class = new AOrd();
@@ -178,7 +178,7 @@
         public Opt<Ord> Pred(Ord v) => v.Case(None(), Some(Lt()), Some(Eq()));
     }
 
-    [Resolvable]
+    
     public class AIEither<either, left, right> : SSumProj<either, left, right>
         where either : IEither<left, right>
     {
@@ -188,7 +188,7 @@
             Value.Case(Projector.Left(), Projector.Right());
     }
 
-    [Resolvable]
+    
     public class AEither<left, right> : SSumProj<Either<left, right>, left, right>, SSumInj<Either<left, right>, left, right>, SUnitInj<Either<left, right>, right>, IEqualityComparer<Either<left, right>>
     {
         public static readonly AEither<left, right> Class = new AEither<left, right>();
@@ -210,7 +210,7 @@
         int IEqualityComparer<Either<left, right>>.GetHashCode(Either<left, right> obj) => obj.GetHashCode();
     }
     
-    [Resolvable]
+    
     public class APair<left, right> : SProdInj<Pair<left, right>, left, right>, SProdProj<Pair<left, right>, left, right>
     {
         public static readonly APair<left, right> Class = new APair<left, right>();
@@ -224,7 +224,7 @@
         public APair<right, left> Flip() => APair<right, left>.Class;
     }
 
-    [Resolvable]
+    
     public class AOpt<val> : SSumProj<Opt<val>, Unit, val>, SSumInj<Opt<val>, Unit, val>, SUnitInj<Opt<val>, val>
     {
         public static readonly AOpt<val> Class = new AOpt<val>();
@@ -279,7 +279,7 @@
             l.IsNone() == r.IsNone() && Optionals.Lift(_eq.Equal, l, r).GetValueOr(true);
     }
 
-    [Resolvable]
+    
     public class AList<val> :
         SMonoid<Lists.List<val>, Additive<Unit>>,
         SUnitInj<Lists.List<val>, val>,
@@ -301,6 +301,13 @@
 
         Lists.List<val> SBinOp<Lists.List<val>, Lists.List<val>, Lists.List<val>, Additive<Unit>>.BinOp(Lists.List<val> l, Lists.List<val> r) =>
             l.Append(r);
+    }
+
+    public class AObject<val> : SNeutral<val, Unit>
+    {
+        public static readonly AObject<val> Class = new AObject<val>();
+
+        public val NullOp() => default(val);
     }
 
     public class AEqComparer<val> : IEqualityComparer<val>, REquality<val, Unit>

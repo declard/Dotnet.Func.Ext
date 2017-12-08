@@ -94,14 +94,14 @@
         /// <summary>
         /// Monad `join` operation
         /// </summary>
-        public static Cont<r, a> Join<r, a>(this Cont<r, Cont<r, a>> that) =>
+        public static Cont<r, a> Flatten<r, a>(this Cont<r, Cont<r, a>> that) =>
             Cont<r, a>.Create(k => that.Case(aˈ => aˈ.Case(k)));
 
         /// <summary>
         /// Monad `bind` operation
         /// </summary>
-        public static Cont<r, b> Bind<r, a, b>(this Cont<r, a> that, Func<a, Cont<r, b>> f) =>
-           that.Map(f).Join();
+        public static Cont<r, b> FlatMap<r, a, b>(this Cont<r, a> that, Func<a, Cont<r, b>> f) =>
+           that.Map(f).Flatten();
 
 
         /// <summary>
@@ -127,6 +127,6 @@
         public static Cont<r, outˈˈ> SelectMany<r, inˈ, outˈ, outˈˈ>(
             this Cont<r, inˈ> that,
             Func<inˈ, Cont<r, outˈ>> f,
-            Func<inˈ, outˈ, outˈˈ> s) => that.Bind(k => f(k).Map(fk => s(k, fk)));
+            Func<inˈ, outˈ, outˈˈ> s) => that.FlatMap(k => f(k).Map(fk => s(k, fk)));
     }
 }

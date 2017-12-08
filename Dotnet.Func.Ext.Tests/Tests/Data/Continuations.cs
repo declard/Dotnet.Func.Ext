@@ -41,7 +41,7 @@ namespace Dotnet.Func.Ext.Tests.Data
         {
             var f = Func<int, int>(x => x + 3).Map(Pure<int, int>);
             var v = 1;
-            AssertEq(v.PureCont().With<int>().Bind(f), f(v));
+            AssertEq(v.PureCont().With<int>().FlatMap(f), f(v));
         }
 
         // f >>= id = f
@@ -49,7 +49,7 @@ namespace Dotnet.Func.Ext.Tests.Data
         public void MonadInnerId()
         {
             var f = 1.PureCont().With<int>();
-            AssertEq(f.Bind(Pure<int, int>), f);
+            AssertEq(f.FlatMap(Pure<int, int>), f);
         }
 
         // f >>= h >>= g = f >>= \x -> h x >>= g
@@ -59,7 +59,7 @@ namespace Dotnet.Func.Ext.Tests.Data
             var f = 1.PureCont().With<int>();
             var h = Func<int, int>(x => x + 3).Map(Pure<int, int>);
             var g = Func<int, int>(x => x * 3).Map(Pure<int, int>);
-            AssertEq(f.Bind(h).Bind(g), f.Bind(kk => h(kk).Bind(g)));
+            AssertEq(f.FlatMap(h).FlatMap(g), f.FlatMap(kk => h(kk).FlatMap(g)));
         }
 
         // pure id <*> v = v

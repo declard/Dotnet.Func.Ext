@@ -107,7 +107,7 @@
             {
                 public Func<ex, Opt<res>> Handler;
 
-                public override Opt<res> Catch(Exception ex) => ex.As<ex>().Bind(Handler);
+                public override Opt<res> Catch(Exception ex) => ex.As<ex>().FlatMap(Handler);
             }
 
             private readonly Func<arg, res> _tryed;

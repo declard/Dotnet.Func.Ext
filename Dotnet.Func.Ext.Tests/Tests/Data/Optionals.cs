@@ -69,7 +69,7 @@ namespace Dotnet.Func.Ext.Tests.Tests.Data
         {
             var v = 1;
             var f = Func<int, Opt<int>>(x => None<int>());
-            AssertEq(v.PureOpt().Bind(f), f(v));
+            AssertEq(v.PureOpt().FlatMap(f), f(v));
         }
 
         // pure v >>= f = f v | f = λa -> Some(a)
@@ -78,7 +78,7 @@ namespace Dotnet.Func.Ext.Tests.Tests.Data
         {
             var v = 1;
             var f = Func<int, int>(x => x + 3).Map(Opt.Pure);
-            AssertEq(v.PureOpt().Bind(f), f(v));
+            AssertEq(v.PureOpt().FlatMap(f), f(v));
         }
 
         // None >>= pure = None
@@ -86,7 +86,7 @@ namespace Dotnet.Func.Ext.Tests.Tests.Data
         public void MonadInnerIdNone()
         {
             var a = None<int>();
-            AssertEq(a.Bind(Opt.Pure), a);
+            AssertEq(a.FlatMap(Opt.Pure), a);
         }
 
         // Some(a) >>= id = Some(a)
@@ -94,7 +94,7 @@ namespace Dotnet.Func.Ext.Tests.Tests.Data
         public void MonadInnerIdSome()
         {
             var a = Some(1);
-            AssertEq(a.Bind(Opt.Pure), a);
+            AssertEq(a.FlatMap(Opt.Pure), a);
         }
 
         // None >>= h >>= g = None >>= \x -> h x >>= g
@@ -104,7 +104,7 @@ namespace Dotnet.Func.Ext.Tests.Tests.Data
             var a = None<int>();
             var g = Func<int, int>(x => x + 3).Map(Opt.Pure);
             var h = Func<int, int>(x => x * 3).Map(Opt.Pure);
-            AssertEq(a.Bind(h).Bind(g), a.Bind(x => h(x).Bind(g)));
+            AssertEq(a.FlatMap(h).FlatMap(g), a.FlatMap(x => h(x).FlatMap(g)));
         }
 
         // Some(a) >>= h >>= g = Some(a) >>= \x -> h x >>= g
@@ -114,7 +114,7 @@ namespace Dotnet.Func.Ext.Tests.Tests.Data
             var a = Some(1);
             var g = Func<int, int>(x => x + 3).Map(Opt.Pure);
             var h = Func<int, int>(x => x * 3).Map(Opt.Pure);
-            AssertEq(a.Bind(h).Bind(g), a.Bind(x => h(x).Bind(g)));
+            AssertEq(a.FlatMap(h).FlatMap(g), a.FlatMap(x => h(x).FlatMap(g)));
         }
 
         // pure id <*> None = None

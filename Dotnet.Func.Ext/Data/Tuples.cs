@@ -83,8 +83,8 @@
             /// <summary>
             /// Pointer functor unary operation
             /// </summary>
-            public static Pair<left, right> Pure<left, right>(right val, Resolver.Resolvable<SNeutral<left, Additive<Unit>>> neu = null) =>
-                Pair(neu.Value().Zero(), val);
+            public static Pair<left, right> Pure<left, right>(right val, SNeutral<left, Unit> neu = null) =>
+                Pair((neu ?? AObject<left>.Class).NullOp(), val);
         }
 
         /// <summary>
@@ -108,8 +108,8 @@
         /// <summary>
         /// Pair monadic join (requires left to be an additive semigrop)
         /// </summary>
-        public static Pair<left, right> Join<left, right>(this Pair<left, Pair<left, right>> that, Resolver.Resolvable<SSemigroup<left, Additive<Unit>>> semi = null) =>
-            Pair(semi.Value().BinOp(that.Left(), that.Right().Left()), that.Right().Right());
+        public static Pair<left, right> Flatten<left, right>(this Pair<left, Pair<left, right>> that, SSemigroup<left, Additive<Unit>> semi) => // todo resolve semi
+            Pair(semi.BinOp(that.Left(), that.Right().Left()), that.Right().Right());
 
         /// <summary>
         /// Pair mirroring (left and right get exchanged)
@@ -167,8 +167,8 @@
         /// <summary>
         /// Tuple_2 monadic join (requires Item1 type to be an additive semigrop)
         /// </summary>
-        public static Tuple<left, right> Join<left, right>(this Tuple<left, Tuple<left, right>> that, Resolver.Resolvable<SSemigroup<left, Additive<Unit>>> semi = null) =>
-            that.ToPair().Map(ToPair).Join(semi).ToTuple();
+        public static Tuple<left, right> Flatten<left, right>(this Tuple<left, Tuple<left, right>> that, SSemigroup<left, Additive<Unit>> semi) => // todo resolve semi
+            that.ToPair().Map(ToPair).Flatten(semi).ToTuple();
 
         #endregion
 
